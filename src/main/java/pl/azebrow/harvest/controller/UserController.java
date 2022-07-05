@@ -23,7 +23,7 @@ public class UserController {
         return ResponseEntity.ok(null);
     }
 
-    @PostMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<?> updateAccount(
             @PathVariable Long id,
             @RequestBody UserRequest dto

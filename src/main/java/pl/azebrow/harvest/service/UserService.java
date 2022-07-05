@@ -2,9 +2,10 @@ package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.constants.RoleEnum;
+import pl.azebrow.harvest.exeption.EmailAlreadyTakenException;
+import pl.azebrow.harvest.exeption.RoleNotFoundException;
 import pl.azebrow.harvest.exeption.UserNotFoundException;
 import pl.azebrow.harvest.model.Employee;
 import pl.azebrow.harvest.model.Role;
@@ -12,8 +13,6 @@ import pl.azebrow.harvest.model.User;
 import pl.azebrow.harvest.repository.RoleRepository;
 import pl.azebrow.harvest.repository.UserRepository;
 import pl.azebrow.harvest.request.UserRequest;
-import pl.azebrow.harvest.exeption.EmailAlreadyTakenException;
-import pl.azebrow.harvest.exeption.RoleNotFoundException;
 
 import java.util.List;
 import java.util.UUID;
@@ -49,8 +48,10 @@ public class UserService {
         User user = userRepository
                 .findById(id)
                 .orElseThrow(
-                        UserNotFoundException::new
-                );
+                        () -> new UserNotFoundException(String.format("User with id \"%d\" not found", id)));
+        user.setEmail(dto.getEmail());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getFirstName());
     }
 
     private void validateEmail(String email){
