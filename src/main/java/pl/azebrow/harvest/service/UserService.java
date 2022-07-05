@@ -2,16 +2,18 @@ package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import pl.azebrow.harvest.constants.Roles;
+import pl.azebrow.harvest.constants.RoleEnum;
+import pl.azebrow.harvest.exeption.UserNotFoundException;
 import pl.azebrow.harvest.model.Employee;
 import pl.azebrow.harvest.model.Role;
 import pl.azebrow.harvest.model.User;
 import pl.azebrow.harvest.repository.RoleRepository;
 import pl.azebrow.harvest.repository.UserRepository;
-import pl.azebrow.harvest.request.EmployeeRequest;
-import pl.azebrow.harvest.response.exeption.EmailAlreadyTakenException;
-import pl.azebrow.harvest.response.exeption.RoleNotFoundException;
+import pl.azebrow.harvest.request.UserRequest;
+import pl.azebrow.harvest.exeption.EmailAlreadyTakenException;
+import pl.azebrow.harvest.exeption.RoleNotFoundException;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,25 +27,52 @@ public class UserService {
 
     private final ModelMapper mapper;
 
-    public void createEmployee(EmployeeRequest dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new EmailAlreadyTakenException(String.format("Email \"%s\" already exists!", dto.getEmail()));
-        }
-        Role userRole = roleRepository
-                .findByName(Roles.USER)
-                .orElseThrow(
-                        () -> new RoleNotFoundException(String.format("Role \"%s\" not found!", Roles.USER))
-                );
-        User user = User.builder()
-                .email(dto.getEmail())
-                .roles(List.of(userRole))
-                .build();
+    public void createEmployee(UserRequest dto) {
+        validateEmail(dto.getEmail());
+        Role userRole = findRole(RoleEnum.USER);
+        User user = createUser(dto, userRole);
         Employee employee = Employee.builder()
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
                 .code(UUID.randomUUID().toString())
                 .build();
         user.setEmployee(employee);
         userRepository.save(user);
+    }
+
+    public void createStaffAccount(UserRequest dto) {
+        validateEmail(dto.getEmail());
+        Role staffRole = findRole(RoleEnum.STAFF);
+        User user = createUser(dto, staffRole);
+        userRepository.save(user);
+    }
+
+    public void updateAccount(Long id, UserRequest dto) {
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(
+                        UserNotFoundException::new
+                );
+    }
+
+    private void validateEmail(String email){
+        if (userRepository.existsByEmail(email)) {
+            throw new EmailAlreadyTakenException(String.format("Email \"%s\" already exists!", email));
+        }
+    }
+
+    private Role findRole(RoleEnum role){
+        return roleRepository
+                .findByName(role.getName())
+                .orElseThrow(
+                        () -> new RoleNotFoundException(String.format("Role \"%s\" not found!", RoleEnum.USER))
+                );
+    }
+
+    private User createUser(UserRequest dto, Role role){
+        return User.builder()
+                .email(dto.getEmail())
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
+                .roles(List.of(role))
+                .build();
     }
 }

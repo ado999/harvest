@@ -20,4 +20,6 @@ public class Insurance {
     @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     private Employee employee;
 
+
+
 }

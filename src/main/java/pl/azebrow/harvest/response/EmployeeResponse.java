@@ -3,9 +3,8 @@ package pl.azebrow.harvest.response;
 import lombok.Data;
 
 @Data
-public class UserResponse {
-
+public class EmployeeResponse {
     private String firstName;
     private String lastName;
-    private String email;
+    private String code;
 }

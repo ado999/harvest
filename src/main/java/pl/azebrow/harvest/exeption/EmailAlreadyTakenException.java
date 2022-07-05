@@ -1,4 +1,4 @@
-package pl.azebrow.harvest.response.exeption;
+package pl.azebrow.harvest.exeption;
 
 public class EmailAlreadyTakenException extends RuntimeException{
     public EmailAlreadyTakenException(String message) {

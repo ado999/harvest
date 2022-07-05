@@ -3,7 +3,7 @@ package pl.azebrow.harvest.request;
 import lombok.Getter;
 
 @Getter
-public class EmployeeRequest {
+public class UserRequest {
 
     private String firstName;
     private String lastName;

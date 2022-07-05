@@ -1,4 +1,4 @@
-package pl.azebrow.harvest.response.exeption;
+package pl.azebrow.harvest.exeption;
 
 public class RoleNotFoundException extends RuntimeException{
     public RoleNotFoundException(String message) {
