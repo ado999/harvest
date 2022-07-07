@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.azebrow.harvest.mail.MailModel;
 import pl.azebrow.harvest.request.PasswordChangeRequest;
 import pl.azebrow.harvest.service.PasswordRecoveryService;
 
@@ -18,7 +19,7 @@ public class PasswordRecoveryController {
     public ResponseEntity<?> createPasswordRecoveryToken(
             @RequestParam String email
     ) {
-        recoveryService.createPasswordRecoveryToken(email);
+        recoveryService.createPasswordRecoveryToken(email, MailModel.Type.PASSWORD_RECOVERY);
         return ResponseEntity.ok(null);
     }
 

@@ -7,7 +7,9 @@ import pl.azebrow.harvest.constants.RoleEnum;
 import pl.azebrow.harvest.exeption.EmailAlreadyTakenException;
 import pl.azebrow.harvest.exeption.RoleNotFoundException;
 import pl.azebrow.harvest.exeption.UserNotFoundException;
+import pl.azebrow.harvest.mail.MailModel;
 import pl.azebrow.harvest.model.Employee;
+import pl.azebrow.harvest.model.PasswordRecoveryToken;
 import pl.azebrow.harvest.model.Role;
 import pl.azebrow.harvest.model.User;
 import pl.azebrow.harvest.repository.RoleRepository;
@@ -21,6 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final PasswordRecoveryService passwordRecoveryService;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
@@ -34,24 +37,29 @@ public class UserService {
                 .code(UUID.randomUUID().toString())
                 .build();
         user.setEmployee(employee);
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
+        passwordRecoveryService.createPasswordRecoveryToken(user.getEmail(), MailModel.Type.PASSWORD_CREATION);
     }
 
     public void createStaffAccount(UserRequest dto) {
         validateEmail(dto.getEmail());
         Role staffRole = findRole(RoleEnum.STAFF);
         User user = createUser(dto, staffRole);
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
+        passwordRecoveryService.createPasswordRecoveryToken(user.getEmail(), MailModel.Type.PASSWORD_CREATION);
     }
 
     public void updateAccount(Long id, UserRequest dto) {
-        User user = userRepository
-                .findById(id)
-                .orElseThrow(
-                        () -> new UserNotFoundException(String.format("User with id \"%d\" not found", id)));
+        User user = findUserById(id);
         user.setEmail(dto.getEmail());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getFirstName());
+    }
+
+    public User findUserById(Long id){
+        return userRepository
+                .findById(id)
+                .orElseThrow(() -> new UserNotFoundException(String.format("User with id \"%d\" not found", id)));
     }
 
     private void validateEmail(String email){

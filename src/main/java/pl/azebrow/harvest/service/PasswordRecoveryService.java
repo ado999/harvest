@@ -29,7 +29,7 @@ public class PasswordRecoveryService {
 
     private final EmailService emailService;
 
-    public void createPasswordRecoveryToken(String email) {
+    public void createPasswordRecoveryToken(String email, MailModel.Type type) {
         Optional<User> optional = userRepository.findByEmail(email);
         if (optional.isEmpty()) {
             return;
@@ -43,7 +43,7 @@ public class PasswordRecoveryService {
                 .name(user.getFirstName())
                 .to(user.getEmail())
                 .token(token.getToken())
-                .mailType(MailModel.Type.PASSWORD_RECOVERY)
+                .mailType(type)
                 .build();
         try {
             emailService.sendEmail(model);

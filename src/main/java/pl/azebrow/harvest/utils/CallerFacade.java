@@ -6,12 +6,9 @@ import org.springframework.stereotype.Component;
 import pl.azebrow.harvest.exeption.CallerUnspecifiedException;
 import pl.azebrow.harvest.model.User;
 
-import java.security.Principal;
-
 @Component
-public class UserFacadeImpl implements UserFacade {
+public class CallerFacade {
 
-    @Override
     public User getCaller() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Object principal = auth.getPrincipal();
