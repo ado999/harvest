@@ -1,7 +1,9 @@
 package pl.azebrow.harvest.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import pl.azebrow.harvest.constants.RoleEnum;
 import pl.azebrow.harvest.request.LocationRequest;
 import pl.azebrow.harvest.response.LocationResponse;
 import pl.azebrow.harvest.service.LocationService;
@@ -10,6 +12,7 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping("/api/v1/location")
+@Secured({RoleEnum.Constants.ADMIN, RoleEnum.Constants.STAFF})
 @RequiredArgsConstructor
 public class LocationController {
 

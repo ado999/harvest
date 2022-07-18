@@ -60,6 +60,6 @@ public class InsuranceService {
         return insuranceRepository
                 .findById(insuranceId)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("Insurance with id \"%d\" not found!"));
+                        () -> new ResourceNotFoundException("Insurance with id \"%d\" not found!", insuranceId));
     }
 }

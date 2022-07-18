@@ -3,6 +3,7 @@ package pl.azebrow.harvest.service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import pl.azebrow.harvest.exeption.ResourceNotFoundException;
 import pl.azebrow.harvest.model.Location;
 import pl.azebrow.harvest.model.User;
 import pl.azebrow.harvest.repository.LocationRepository;
@@ -29,9 +30,16 @@ public class LocationService {
 
     public void createLocation(LocationRequest locationRequest) {
         Location location = new Location();
-        User user = userService.findUserById(locationRequest.getOwnerId());
+        User user = userService.findUserById(locationRequest.getOwner());
         location.setOwner(user);
         location.setDescription(location.getDescription());
         locationRepository.save(location);
+    }
+
+    public Location getLocationById(Long id) {
+        return locationRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Location with id \"%d\" not found!", id)
+                );
     }
 }
