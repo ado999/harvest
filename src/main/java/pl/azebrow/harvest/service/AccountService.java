@@ -9,61 +9,61 @@ import pl.azebrow.harvest.exeption.RoleNotFoundException;
 import pl.azebrow.harvest.exeption.UserNotFoundException;
 import pl.azebrow.harvest.mail.MailModel;
 import pl.azebrow.harvest.model.Employee;
-import pl.azebrow.harvest.model.PasswordRecoveryToken;
 import pl.azebrow.harvest.model.Role;
-import pl.azebrow.harvest.model.User;
+import pl.azebrow.harvest.model.Account;
 import pl.azebrow.harvest.repository.RoleRepository;
-import pl.azebrow.harvest.repository.UserRepository;
+import pl.azebrow.harvest.repository.AccountRepository;
 import pl.azebrow.harvest.request.UserRequest;
+import pl.azebrow.harvest.utils.EmployeeCodeGenerator;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class AccountService {
 
     private final PasswordRecoveryService passwordRecoveryService;
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
 
     private final ModelMapper mapper;
+    private final EmployeeCodeGenerator codeGenerator;
 
     public void createEmployee(UserRequest dto) {
         validateEmail(dto.getEmail());
-        Role userRole = findRole(RoleEnum.USER);
-        User user = createUser(dto, userRole);
+        Role accountRole = findRole(RoleEnum.USER);
+        Account account = createUser(dto, accountRole);
         Employee employee = Employee.builder()
-                .code(UUID.randomUUID().toString())
+                .code(codeGenerator.generateCode(dto.getLastName()))
                 .build();
-        user.setEmployee(employee);
-        userRepository.saveAndFlush(user);
-        passwordRecoveryService.createPasswordRecoveryToken(user.getEmail(), MailModel.Type.PASSWORD_CREATION);
+        account.setEmployee(employee);
+        accountRepository.saveAndFlush(account);
+        passwordRecoveryService.createPasswordRecoveryToken(account.getEmail(), MailModel.Type.PASSWORD_CREATION);
     }
 
     public void createStaffAccount(UserRequest dto) {
         validateEmail(dto.getEmail());
         Role staffRole = findRole(RoleEnum.STAFF);
-        User user = createUser(dto, staffRole);
-        userRepository.saveAndFlush(user);
-        passwordRecoveryService.createPasswordRecoveryToken(user.getEmail(), MailModel.Type.PASSWORD_CREATION);
+        Account account = createUser(dto, staffRole);
+        accountRepository.saveAndFlush(account);
+        passwordRecoveryService.createPasswordRecoveryToken(account.getEmail(), MailModel.Type.PASSWORD_CREATION);
     }
 
     public void updateAccount(Long id, UserRequest dto) {
-        User user = findUserById(id);
-        user.setEmail(dto.getEmail());
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getFirstName());
+        Account account = findUserById(id);
+        account.setEmail(dto.getEmail());
+        account.setFirstName(dto.getFirstName());
+        account.setLastName(dto.getFirstName());
     }
 
-    public User findUserById(Long id){
-        return userRepository
+    public Account findUserById(Long id){
+        return accountRepository
                 .findById(id)
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with id \"%d\" not found", id)));
     }
 
     private void validateEmail(String email){
-        if (userRepository.existsByEmail(email)) {
+        if (accountRepository.existsByEmail(email)) {
             throw new EmailAlreadyTakenException(String.format("Email \"%s\" already exists!", email));
         }
     }
@@ -76,8 +76,8 @@ public class UserService {
                 );
     }
 
-    private User createUser(UserRequest dto, Role role){
-        return User.builder()
+    private Account createUser(UserRequest dto, Role role){
+        return Account.builder()
                 .email(dto.getEmail())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())

@@ -33,5 +33,5 @@ public class Job {
 
     private BigDecimal totalAmount;
 
-    private User approver;
+    private Account approver;
 }

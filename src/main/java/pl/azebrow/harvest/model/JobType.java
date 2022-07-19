@@ -20,7 +20,7 @@ public class JobType {
     private String title;
 
     @Enumerated(EnumType.STRING)
-    private JobUnit jobUnit;
+    private JobUnit unit;
 
     private BigDecimal defaultRate;
 }

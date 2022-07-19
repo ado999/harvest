@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 
 @Entity
 @Data
@@ -19,12 +20,13 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String code;
 
     @OneToOne(mappedBy = "employee")
-    private User user;
+    private Account account;
 
     @OneToMany(mappedBy = "employee")
-    private Collection<Insurance> policies;
+    private Collection<Insurance> policies = new HashSet<>();
 
 }

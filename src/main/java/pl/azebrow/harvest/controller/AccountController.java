@@ -6,28 +6,29 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.constants.RoleEnum;
 import pl.azebrow.harvest.request.UserRequest;
-import pl.azebrow.harvest.service.EmployeeService;
 import pl.azebrow.harvest.service.AccountService;
 
 @RestController
-@RequestMapping("/api/v1/employee")
-@Secured({RoleEnum.Constants.ADMIN, RoleEnum.Constants.STAFF})
+@RequestMapping("/api/v1/account")
+@Secured(RoleEnum.Constants.ADMIN)
 @RequiredArgsConstructor
-public class EmployeeController {
+public class AccountController {
 
-    private final EmployeeService employeeService;
     private final AccountService accountService;
 
-    @GetMapping
-    public ResponseEntity<?> getEmployeeByCode(
-            @RequestParam String code) {
-        return ResponseEntity.ok(employeeService.findEmployeeByCode(code));
+    @PostMapping
+    public ResponseEntity<?> createStaffAccount(
+            @RequestBody UserRequest dto) {
+        accountService.createStaffAccount(dto);
+        return ResponseEntity.ok(null);
     }
 
-    @PostMapping
-    public ResponseEntity<?> createEmployeeAccount(
-            @RequestBody UserRequest dto) {
-        accountService.createEmployee(dto);
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateAccount(
+            @PathVariable Long id,
+            @RequestBody UserRequest dto
+    ){
+        accountService.updateAccount(id, dto);
         return ResponseEntity.ok(null);
     }
 

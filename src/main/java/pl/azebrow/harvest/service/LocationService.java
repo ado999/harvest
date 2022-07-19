@@ -5,7 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.exeption.ResourceNotFoundException;
 import pl.azebrow.harvest.model.Location;
-import pl.azebrow.harvest.model.User;
+import pl.azebrow.harvest.model.Account;
 import pl.azebrow.harvest.repository.LocationRepository;
 import pl.azebrow.harvest.request.LocationRequest;
 import pl.azebrow.harvest.response.LocationResponse;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LocationService {
 
-    private final UserService userService;
+    private final AccountService accountService;
     private final LocationRepository locationRepository;
 
     private final ModelMapper mapper;
@@ -30,8 +30,8 @@ public class LocationService {
 
     public void createLocation(LocationRequest locationRequest) {
         Location location = new Location();
-        User user = userService.findUserById(locationRequest.getOwner());
-        location.setOwner(user);
+        Account account = accountService.findUserById(locationRequest.getOwner());
+        location.setOwner(account);
         location.setDescription(location.getDescription());
         locationRepository.save(location);
     }

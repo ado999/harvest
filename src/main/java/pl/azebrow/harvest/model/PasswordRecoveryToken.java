@@ -22,12 +22,12 @@ public class PasswordRecoveryToken {
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
-    private User user;
+    private Account account;
 
     private LocalDateTime expiryDate;
 
-    public PasswordRecoveryToken(User user) {
-        this.user = user;
+    public PasswordRecoveryToken(Account account) {
+        this.account = account;
         this.token = UUID.randomUUID().toString();
         this.expiryDate = LocalDateTime.now().plusMinutes(EXPIRATION_MINUTES);
     }
