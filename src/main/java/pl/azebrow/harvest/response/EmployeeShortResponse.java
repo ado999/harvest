@@ -1,8 +1,10 @@
 package pl.azebrow.harvest.response;
 
-public class AccountResponse {
+import lombok.Data;
+
+@Data
+public class EmployeeShortResponse {
     private String firstName;
     private String lastName;
-    private String email;
-    private Boolean enabled;
+    private String code;
 }

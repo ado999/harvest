@@ -1,10 +1,10 @@
 package pl.azebrow.harvest.response;
 
-import lombok.Data;
+import java.util.Collection;
 
-@Data
 public class EmployeeResponse {
-    private String firstName;
-    private String lastName;
+    private AccountResponse account;
+    private Collection<InsuranceResponse> policies;
     private String code;
+
 }

@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public class JobResponse {
     private Long id;
     private LocationResponse location;
-    private EmployeeResponse employee;
+    private EmployeeShortResponse employee;
     private String jobTypeTitle;
     private String jobTypeUnit;
     private BigDecimal quantity;
