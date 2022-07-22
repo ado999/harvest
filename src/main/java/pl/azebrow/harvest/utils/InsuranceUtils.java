@@ -28,7 +28,7 @@ public class InsuranceUtils {
 
     public Integer getRemainingValidityInDays(Employee employee){
         if (!isInsuranceValid(employee)){
-            return 0;
+            return -1;
         }
         LocalDate now = LocalDate.now();
         Collection<Insurance> policies = insuranceRepository.findAllByEmployee(employee);

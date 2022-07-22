@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.azebrow.harvest.exeption.InvalidTokenException;
 import pl.azebrow.harvest.mail.MailModel;
 import pl.azebrow.harvest.model.PasswordRecoveryToken;
-import pl.azebrow.harvest.model.User;
+import pl.azebrow.harvest.model.Account;
 import pl.azebrow.harvest.repository.PasswordRecoveryTokenRepository;
-import pl.azebrow.harvest.repository.UserRepository;
+import pl.azebrow.harvest.repository.AccountRepository;
 import pl.azebrow.harvest.request.PasswordChangeRequest;
 
 import javax.mail.MessagingException;
@@ -24,24 +24,24 @@ import java.util.Optional;
 public class PasswordRecoveryService {
 
     private final PasswordRecoveryTokenRepository tokenRepository;
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
     private final EmailService emailService;
 
     public void createPasswordRecoveryToken(String email, MailModel.Type type) {
-        Optional<User> optional = userRepository.findByEmail(email);
+        Optional<Account> optional = accountRepository.findByEmail(email);
         if (optional.isEmpty()) {
             return;
         }
-        User user = optional.get();
-        PasswordRecoveryToken token = new PasswordRecoveryToken(user);
+        Account account = optional.get();
+        PasswordRecoveryToken token = new PasswordRecoveryToken(account);
         tokenRepository.save(token);
 
         MailModel model = MailModel
                 .builder()
-                .name(user.getFirstName())
-                .to(user.getEmail())
+                .name(account.getFirstName())
+                .to(account.getEmail())
                 .token(token.getToken())
                 .mailType(type)
                 .build();
@@ -60,13 +60,13 @@ public class PasswordRecoveryService {
         if (token.getExpiryDate() == null || token.getExpiryDate().isBefore(LocalDateTime.now())) {
             throw new InvalidTokenException("Token expired");
         }
-        User user = token.getUser();
-        if (!user.getEmail().equals(request.getEmail())) {
+        Account account = token.getAccount();
+        if (!account.getEmail().equals(request.getEmail())) {
             throw new InvalidTokenException("Email not valid!");
         }
         //todo password validation
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        userRepository.save(user);
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        accountRepository.save(account);
         tokenRepository.delete(token);
     }
 }

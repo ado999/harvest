@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.exeption.EmployeeNotFoundException;
 import pl.azebrow.harvest.model.Employee;
 import pl.azebrow.harvest.repository.EmployeeRepository;
-import pl.azebrow.harvest.response.EmployeeResponse;
+import pl.azebrow.harvest.response.EmployeeShortResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -16,10 +16,10 @@ public class EmployeeService {
 
     private final ModelMapper mapper;
 
-    public EmployeeResponse findEmployeeByCode(String code) {
+    public EmployeeShortResponse findEmployeeByCode(String code) {
         return employeeRepository
                 .findByCode(code)
-                .map(e -> mapper.map(e, EmployeeResponse.class))
+                .map(e -> mapper.map(e, EmployeeShortResponse.class))
                 .orElseThrow(
                         () -> new EmployeeNotFoundException(String.format("Employee with code \"%s\" not found!", code))
                 );

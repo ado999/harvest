@@ -25,6 +25,8 @@ public class Job {
     @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     private Employee employee;
 
+    @ManyToOne
+    @JoinColumn(name = "job_type_id", referencedColumnName = "id", nullable = false)
     private JobType jobType;
 
     private BigDecimal quantity;
@@ -33,5 +35,5 @@ public class Job {
 
     private BigDecimal totalAmount;
 
-    private User approver;
+    private Account approver;
 }

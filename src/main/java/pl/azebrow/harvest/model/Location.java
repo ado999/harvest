@@ -15,7 +15,7 @@ public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private User owner;
+    private Account owner;
     private String description;
     private LocalDateTime creationDate = LocalDateTime.now();
 

@@ -20,7 +20,7 @@ public class JobTypeService {
         JobType jobType = JobType
                 .builder()
                 .title(jobTypeRequest.getTitle())
-                .jobUnit(jobUnit)
+                .unit(jobUnit)
                 .defaultRate(jobTypeRequest.getDefaultRate())
                 .build();
         jobTypeRepository.save(jobType);

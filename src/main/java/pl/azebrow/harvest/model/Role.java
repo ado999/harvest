@@ -17,7 +17,7 @@ public class Role implements GrantedAuthority {
     private String name;
 
     @ManyToMany(mappedBy = "roles")
-    private Collection<User> users;
+    private Collection<Account> accounts;
 
     @ManyToMany
     @JoinTable(

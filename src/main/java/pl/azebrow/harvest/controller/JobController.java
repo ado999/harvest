@@ -19,7 +19,7 @@ public class JobController {
     public void postJob(
             @RequestBody JobRequest jobRequest
     ) {
-        jobService.addOrUpdateJob(jobRequest);
+        jobService.addOrUpdateJob(jobRequest, null);
     }
 
     @PutMapping("/{id}")

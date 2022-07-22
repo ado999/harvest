@@ -21,7 +21,7 @@ public class JobService {
     private final JobRepository jobRepository;
 
     public void addOrUpdateJob(JobRequest jobRequest, Long id) {
-        User approver = callerFacade.getCaller();
+        Account approver = callerFacade.getCaller();
         Employee employee = employeeService.getEmployeeById(jobRequest.getEmployeeId());
         Location location = locationService.getLocationById(jobRequest.getLocationId());
         JobType jobType = jobTypeService.getJobTypeById(jobRequest.getJobTypeId());
@@ -39,10 +39,6 @@ public class JobService {
                 .totalAmount(totalAmount)
                 .build();
         jobRepository.save(job);
-    }
-
-    public void addOrUpdateJob(JobRequest jobRequest) {
-        addOrUpdateJob(jobRequest, null);
     }
 
     private Job getJobById(Long id) {

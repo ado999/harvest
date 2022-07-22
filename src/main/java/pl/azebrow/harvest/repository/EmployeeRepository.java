@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Employee> findByCode(String code);
+
+    Boolean existsByCode(String code);
 }
