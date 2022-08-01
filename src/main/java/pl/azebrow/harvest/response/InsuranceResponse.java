@@ -10,5 +10,6 @@ public class InsuranceResponse {
     private Long id;
     private LocalDate validFrom;
     private LocalDate validTo;
+    private InsuranceStatus status;
 
 }
