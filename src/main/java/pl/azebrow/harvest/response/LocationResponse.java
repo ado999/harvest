@@ -1,7 +1,10 @@
 package pl.azebrow.harvest.response;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
+@Data
 public class LocationResponse {
 
     private Long id;

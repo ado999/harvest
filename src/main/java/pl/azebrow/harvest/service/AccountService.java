@@ -1,18 +1,17 @@
 package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.constants.RoleEnum;
 import pl.azebrow.harvest.exeption.EmailAlreadyTakenException;
 import pl.azebrow.harvest.exeption.RoleNotFoundException;
 import pl.azebrow.harvest.exeption.UserNotFoundException;
 import pl.azebrow.harvest.mail.MailModel;
+import pl.azebrow.harvest.model.Account;
 import pl.azebrow.harvest.model.Employee;
 import pl.azebrow.harvest.model.Role;
-import pl.azebrow.harvest.model.Account;
-import pl.azebrow.harvest.repository.RoleRepository;
 import pl.azebrow.harvest.repository.AccountRepository;
+import pl.azebrow.harvest.repository.RoleRepository;
 import pl.azebrow.harvest.request.UserRequest;
 import pl.azebrow.harvest.utils.EmployeeCodeGenerator;
 
@@ -26,7 +25,6 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
 
-    private final ModelMapper mapper;
     private final EmployeeCodeGenerator codeGenerator;
 
     public void createEmployee(UserRequest dto) {

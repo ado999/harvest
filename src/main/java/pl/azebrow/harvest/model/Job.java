@@ -38,5 +38,7 @@ public class Job {
 
     private BigDecimal totalAmount;
 
+    @ManyToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
     private Account approver;
 }

@@ -11,7 +11,6 @@ import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
-@Table(name = "users")
 @Data
 @Builder
 @NoArgsConstructor
@@ -35,7 +34,7 @@ public class Account implements UserDetails {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "users_roles",
+            name = "account_roles",
             joinColumns = @JoinColumn(
                     name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(

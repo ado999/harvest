@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.exeption.ResourceNotFoundException;
-import pl.azebrow.harvest.model.Location;
 import pl.azebrow.harvest.model.Account;
+import pl.azebrow.harvest.model.Location;
 import pl.azebrow.harvest.repository.LocationRepository;
 import pl.azebrow.harvest.request.LocationRequest;
 import pl.azebrow.harvest.response.LocationResponse;
@@ -21,6 +21,7 @@ public class LocationService {
     private final LocationRepository locationRepository;
 
     private final ModelMapper mapper;
+
     public Collection<LocationResponse> getLocations() {
         return locationRepository
                 .findAll()
@@ -29,10 +30,11 @@ public class LocationService {
     }
 
     public void createLocation(LocationRequest locationRequest) {
-        Location location = new Location();
         Account account = accountService.findUserById(locationRequest.getOwner());
-        location.setOwner(account);
-        location.setDescription(location.getDescription());
+        Location location = Location.builder()
+                .owner(account)
+                .description(locationRequest.getDescription())
+                .build();
         locationRepository.save(location);
     }
 

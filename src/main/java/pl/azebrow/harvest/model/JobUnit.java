@@ -1,18 +1,23 @@
 package pl.azebrow.harvest.model;
 
 public enum JobUnit {
-    HOURS("h"),
-    HA("ha"),
-    PIECE("pcs");
+    TIME("h"),
+    AREA("ar"),
+    QUANTITY("szt"),
+    WEIGHT("kg");
 
-    private final String description;
+    private final String suffix;
 
-    JobUnit(String description) {
-        this.description = description;
+    JobUnit(String suffix) {
+        this.suffix = suffix;
     }
 
-    public String getDescription() {
-        return description;
+    public String getSuffix() {
+        return suffix;
     }
 
+    public String getName() {
+        return name();
+    }
 }
+

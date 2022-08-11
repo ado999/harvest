@@ -8,12 +8,18 @@ import pl.azebrow.harvest.model.JobUnit;
 import pl.azebrow.harvest.repository.JobTypeRepository;
 import pl.azebrow.harvest.request.JobTypeRequest;
 
+import java.util.Collection;
+
 @Service
 @RequiredArgsConstructor
 public class JobTypeService {
 
     private final JobTypeRepository jobTypeRepository;
 
+
+    public Collection<JobType> getJobTypeList() {
+        return jobTypeRepository.findAll();
+    }
 
     public void addJobType(JobTypeRequest jobTypeRequest) {
         JobUnit jobUnit = JobUnit.valueOf(jobTypeRequest.getJobUnit());
@@ -23,6 +29,7 @@ public class JobTypeService {
                 .unit(jobUnit)
                 .defaultRate(jobTypeRequest.getDefaultRate())
                 .build();
+
         jobTypeRepository.save(jobType);
     }
 
