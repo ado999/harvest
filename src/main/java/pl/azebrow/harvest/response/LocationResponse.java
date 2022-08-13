@@ -10,6 +10,7 @@ public class LocationResponse {
     private Long id;
     private AccountResponse owner;
     private String description;
+    private Boolean disabled;
     private LocalDateTime creationDate;
 
 }

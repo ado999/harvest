@@ -1,22 +1,18 @@
 package pl.azebrow.harvest.service;
 
-import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.azebrow.harvest.exeption.InvalidTokenException;
 import pl.azebrow.harvest.mail.MailModel;
-import pl.azebrow.harvest.model.PasswordRecoveryToken;
 import pl.azebrow.harvest.model.Account;
+import pl.azebrow.harvest.model.AccountStatus;
+import pl.azebrow.harvest.model.PasswordRecoveryToken;
 import pl.azebrow.harvest.repository.PasswordRecoveryTokenRepository;
-import pl.azebrow.harvest.repository.AccountRepository;
 import pl.azebrow.harvest.request.PasswordChangeRequest;
 
-import javax.mail.MessagingException;
-import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -24,17 +20,18 @@ import java.util.Optional;
 public class PasswordRecoveryService {
 
     private final PasswordRecoveryTokenRepository tokenRepository;
-    private final AccountRepository accountRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     private final EmailService emailService;
+    private AccountService accountService = null;
 
-    public void createPasswordRecoveryToken(String email, MailModel.Type type) {
-        Optional<Account> optional = accountRepository.findByEmail(email);
-        if (optional.isEmpty()) {
-            return;
-        }
-        Account account = optional.get();
+    public void initComponent(AccountService accountService) {
+        this.accountService = accountService;
+        emailService.initComponent(accountService);
+    }
+
+    public void createPasswordRecoveryToken(Account account, MailModel.Type type) {
         PasswordRecoveryToken token = new PasswordRecoveryToken(account);
         tokenRepository.save(token);
 
@@ -45,11 +42,12 @@ public class PasswordRecoveryService {
                 .token(token.getToken())
                 .mailType(type)
                 .build();
-        try {
-            emailService.sendEmail(model);
-        } catch (MessagingException | IOException | TemplateException e) {
-            throw new RuntimeException(e);
-        }
+        emailService.sendEmail(model);
+    }
+
+    public void createPasswordRecoveryToken(String email, MailModel.Type type) {
+        Account account = accountService.getAccountByEmail(email);
+        createPasswordRecoveryToken(account, type);
     }
 
     public void recoverPassword(String tokenString, PasswordChangeRequest request) {
@@ -64,9 +62,9 @@ public class PasswordRecoveryService {
         if (!account.getEmail().equals(request.getEmail())) {
             throw new InvalidTokenException("Email not valid!");
         }
-        //todo password validation
-        account.setPassword(passwordEncoder.encode(request.getPassword()));
-        accountRepository.save(account);
+        String password = passwordEncoder.encode(request.getPassword());
+        accountService.setAccountPassword(account, password);
+        accountService.setAccountStatus(account, AccountStatus.EMAIL_CONFIRMED);
         tokenRepository.delete(token);
     }
 }

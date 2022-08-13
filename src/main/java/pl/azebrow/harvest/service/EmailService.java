@@ -4,11 +4,14 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import pl.azebrow.harvest.mail.MailModel;
+import pl.azebrow.harvest.model.AccountStatus;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -24,6 +27,8 @@ public class EmailService {
     private final Configuration emailConfig;
     private final String sourceAddress;
 
+    private AccountService accountService = null;
+
     public EmailService(
             JavaMailSender emailSender,
             @Qualifier("freeMarkerConfig") Configuration emailConfig,
@@ -33,24 +38,67 @@ public class EmailService {
         this.sourceAddress = sourceAddress;
     }
 
-    public void sendEmail(MailModel mailModel) throws MessagingException, IOException, TemplateException {
+    public void initComponent(AccountService accountService) {
+        this.accountService = accountService;
+    }
+
+    public void sendEmail(MailModel mailModel) {
         MimeMessage message = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(
-                message,
-                MimeMessageHelper.MULTIPART_MODE_RELATED,
-                StandardCharsets.UTF_8.name());
-        String templateName = switch (mailModel.getMailType()){
+        MimeMessageHelper helper;
+        try {
+            helper = new MimeMessageHelper(
+                    message,
+                    MimeMessageHelper.MULTIPART_MODE_RELATED,
+                    StandardCharsets.UTF_8.name());
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            accountService.setAccountStatus(mailModel.getTo(), AccountStatus.ERROR_SENDING_EMAIL);
+            return;
+        }
+        String templateName = switch (mailModel.getMailType()) {
             case PASSWORD_RECOVERY -> PWD_RECOVERY_TEMPLATE;
             case PASSWORD_CREATION -> PWD_CREATION_TEMPLATE;
         };
-        Template template = emailConfig.getTemplate(templateName);
-        String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, mailModel.getModel());
+        Template template;
+        try {
+            template = emailConfig.getTemplate(templateName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            accountService.setAccountStatus(mailModel.getTo(), AccountStatus.ERROR_SENDING_EMAIL);
+            return;
+        }
+        String html;
+        try {
+            html = FreeMarkerTemplateUtils.processTemplateIntoString(template, mailModel.getModel());
+        } catch (IOException | TemplateException e) {
+            e.printStackTrace();
+            accountService.setAccountStatus(mailModel.getTo(), AccountStatus.ERROR_SENDING_EMAIL);
+            return;
+        }
 
-        helper.setFrom(sourceAddress);
-        helper.setTo(mailModel.getTo());
-        helper.setSubject(mailModel.getSubject());
-        helper.setText(html, true);
-        emailSender.send(message);
+        try {
+            helper.setFrom(sourceAddress);
+            helper.setTo(mailModel.getTo());
+            helper.setSubject(mailModel.getSubject());
+            helper.setText(html, true);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            accountService.setAccountStatus(mailModel.getTo(), AccountStatus.ERROR_SENDING_EMAIL);
+            return;
+        }
+        new Thread(() -> {
+            try {
+                emailSender.send(message);
+            } catch (MailSendException e) {
+                e.printStackTrace();
+                accountService.setAccountStatus(mailModel.getTo(), AccountStatus.EMAIL_NONEXISTENT);
+                return;
+            } catch (MailException e) {
+                e.printStackTrace();
+                accountService.setAccountStatus(mailModel.getTo(), AccountStatus.ERROR_SENDING_EMAIL);
+                return;
+            }
+            accountService.setAccountStatus(mailModel.getTo(), AccountStatus.CONFIRMATION_EMAIL_SENT);
+        }).start();
     }
-
 }

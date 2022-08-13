@@ -1,14 +1,13 @@
 package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.exeption.ResourceNotFoundException;
 import pl.azebrow.harvest.model.Account;
 import pl.azebrow.harvest.model.Location;
 import pl.azebrow.harvest.repository.LocationRepository;
 import pl.azebrow.harvest.request.LocationRequest;
-import pl.azebrow.harvest.response.LocationResponse;
+import pl.azebrow.harvest.request.LocationUpdateRequest;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -20,12 +19,11 @@ public class LocationService {
     private final AccountService accountService;
     private final LocationRepository locationRepository;
 
-    private final ModelMapper mapper;
-
-    public Collection<LocationResponse> getLocations() {
+    public Collection<Location> getLocations(boolean showDisabled) {
         return locationRepository
                 .findAll()
-                .stream().map(l -> mapper.map(l, LocationResponse.class))
+                .stream()
+                .filter(l -> showDisabled || !l.getDisabled())
                 .collect(Collectors.toList());
     }
 
@@ -34,7 +32,14 @@ public class LocationService {
         Location location = Location.builder()
                 .owner(account)
                 .description(locationRequest.getDescription())
+                .disabled(locationRequest.getDisabled())
                 .build();
+        locationRepository.save(location);
+    }
+
+    public void updateLocation(Long id, LocationUpdateRequest updateRequest) {
+        Location location = getLocationById(id);
+        location.setDisabled(updateRequest.getDisabled());
         locationRepository.save(location);
     }
 

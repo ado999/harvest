@@ -2,6 +2,7 @@ package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.azebrow.harvest.exeption.EntityDisabledException;
 import pl.azebrow.harvest.exeption.ResourceNotFoundException;
 import pl.azebrow.harvest.model.*;
 import pl.azebrow.harvest.repository.JobRepository;
@@ -24,6 +25,9 @@ public class JobService {
         Account approver = callerFacade.getCaller();
         Employee employee = employeeService.getEmployeeById(jobRequest.getEmployeeId());
         Location location = locationService.getLocationById(jobRequest.getLocationId());
+        if (location.getDisabled()) {
+            throw new EntityDisabledException(String.format("Location \"%s\" is disabled", location.getDescription()));
+        }
         JobType jobType = jobTypeService.getJobTypeById(jobRequest.getJobTypeId());
         BigDecimal rate = jobRequest.getRate();
         BigDecimal quantity = jobRequest.getQuantity();

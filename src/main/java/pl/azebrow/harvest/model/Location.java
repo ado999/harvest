@@ -23,10 +23,18 @@ public class Location {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(
+            name = "account_id",
+            referencedColumnName = "id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "FK_account_location"))
     private Account owner;
 
+    @Column(nullable = false)
     private String description;
+
+    @Column(nullable = false)
+    private Boolean disabled;
 
     @CreatedDate
     private LocalDateTime creationDate;

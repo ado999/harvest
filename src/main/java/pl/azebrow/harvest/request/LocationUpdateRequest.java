@@ -3,10 +3,8 @@ package pl.azebrow.harvest.request;
 import lombok.Data;
 
 @Data
-public class LocationRequest {
+public class LocationUpdateRequest {
 
-    private Long owner;
-    private String description;
     private Boolean disabled;
 
 }

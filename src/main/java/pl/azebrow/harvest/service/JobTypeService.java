@@ -7,8 +7,10 @@ import pl.azebrow.harvest.model.JobType;
 import pl.azebrow.harvest.model.JobUnit;
 import pl.azebrow.harvest.repository.JobTypeRepository;
 import pl.azebrow.harvest.request.JobTypeRequest;
+import pl.azebrow.harvest.request.JobTypeUpdateRequest;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -17,8 +19,12 @@ public class JobTypeService {
     private final JobTypeRepository jobTypeRepository;
 
 
-    public Collection<JobType> getJobTypeList() {
-        return jobTypeRepository.findAll();
+    public Collection<JobType> getJobTypeList(boolean showDisabled) {
+        return jobTypeRepository
+                .findAll()
+                .stream()
+                .filter(j -> showDisabled || !j.getDisabled())
+                .collect(Collectors.toList());
     }
 
     public void addJobType(JobTypeRequest jobTypeRequest) {
@@ -28,8 +34,15 @@ public class JobTypeService {
                 .title(jobTypeRequest.getTitle())
                 .unit(jobUnit)
                 .defaultRate(jobTypeRequest.getDefaultRate())
+                .disabled(false)
                 .build();
 
+        jobTypeRepository.save(jobType);
+    }
+
+    public void setDisabled(Long id, JobTypeUpdateRequest updateRequest) {
+        JobType jobType = getJobTypeById(id);
+        jobType.setDisabled(updateRequest.getDisabled());
         jobTypeRepository.save(jobType);
     }
 

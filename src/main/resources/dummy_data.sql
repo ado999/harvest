@@ -67,16 +67,16 @@ INSERT INTO account_roles
 	(11, 1), (12, 1);
 
 INSERT INTO location
-	(id, creation_date, description, account_id)
+	(id, creation_date, description, account_id, disabled)
 	VALUES
-	(1, '2021-01-01 15:00:00', 'Pole Jana', 11),
-	(2, '2020-01-02 15:00:00', 'Pole Grażki', 12);
+	(1, '2021-01-01 15:00:00', 'Pole Jana', 11, false),
+	(2, '2020-01-02 15:00:00', 'Pole Grażki', 12, false);
 
 INSERT INTO job_type
-	(id, default_rate, title, unit)
+	(id, default_rate, title, unit, disabled)
 	VALUES
-	(1, 20, 'za godzinę', 'TIME'),
-	(2, 1.5, 'za opakowanie', 'QUANTITY');
+	(1, 20, 'za godzinę', 'TIME', false),
+	(2, 1.5, 'za opakowanie', 'QUANTITY', false);
 
 insert into job
 	(id, date, job_type_id, quantity, rate, total_amount, employee_id, location_id, account_id)

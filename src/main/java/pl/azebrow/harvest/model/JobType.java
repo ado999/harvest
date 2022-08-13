@@ -22,7 +22,11 @@ public class JobType {
     private String title;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private JobUnit unit;
 
     private BigDecimal defaultRate;
+
+    @Column(nullable = false)
+    private Boolean disabled;
 }

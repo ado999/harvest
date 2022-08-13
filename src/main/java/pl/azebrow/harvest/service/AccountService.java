@@ -3,83 +3,125 @@ package pl.azebrow.harvest.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.constants.RoleEnum;
+import pl.azebrow.harvest.exeption.AccountNotFoundException;
 import pl.azebrow.harvest.exeption.EmailAlreadyTakenException;
 import pl.azebrow.harvest.exeption.RoleNotFoundException;
-import pl.azebrow.harvest.exeption.UserNotFoundException;
 import pl.azebrow.harvest.mail.MailModel;
 import pl.azebrow.harvest.model.Account;
+import pl.azebrow.harvest.model.AccountStatus;
 import pl.azebrow.harvest.model.Employee;
 import pl.azebrow.harvest.model.Role;
 import pl.azebrow.harvest.repository.AccountRepository;
 import pl.azebrow.harvest.repository.RoleRepository;
-import pl.azebrow.harvest.request.UserRequest;
+import pl.azebrow.harvest.request.AccountEmailUpdateRequest;
+import pl.azebrow.harvest.request.AccountRequest;
+import pl.azebrow.harvest.request.AccountUpdateRequest;
 import pl.azebrow.harvest.utils.EmployeeCodeGenerator;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class AccountService {
 
-    private final PasswordRecoveryService passwordRecoveryService;
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
 
     private final EmployeeCodeGenerator codeGenerator;
 
-    public void createEmployee(UserRequest dto) {
+    private final PasswordRecoveryService passwordRecoveryService;
+
+    @PostConstruct
+    public void initComponent() {
+        passwordRecoveryService.initComponent(this);
+    }
+
+    public void createEmployee(AccountRequest dto) {
         validateEmail(dto.getEmail());
         Role accountRole = findRole(RoleEnum.USER);
-        Account account = createUser(dto, accountRole);
+        Account account = createAccount(dto, accountRole);
         Employee employee = Employee.builder()
                 .code(codeGenerator.generateCode(dto.getLastName()))
                 .build();
         account.setEmployee(employee);
         accountRepository.saveAndFlush(account);
-        passwordRecoveryService.createPasswordRecoveryToken(account.getEmail(), MailModel.Type.PASSWORD_CREATION);
+        passwordRecoveryService.createPasswordRecoveryToken(account, MailModel.Type.PASSWORD_CREATION);
     }
 
-    public void createStaffAccount(UserRequest dto) {
+    public void createStaffAccount(AccountRequest dto) {
         validateEmail(dto.getEmail());
         Role staffRole = findRole(RoleEnum.STAFF);
-        Account account = createUser(dto, staffRole);
+        Account account = createAccount(dto, staffRole);
         accountRepository.saveAndFlush(account);
-        passwordRecoveryService.createPasswordRecoveryToken(account.getEmail(), MailModel.Type.PASSWORD_CREATION);
+        passwordRecoveryService.createPasswordRecoveryToken(account, MailModel.Type.PASSWORD_CREATION);
     }
 
-    public void updateAccount(Long id, UserRequest dto) {
+    public void updateAccount(Long id, AccountUpdateRequest updateRequest) {
         Account account = findUserById(id);
-        account.setEmail(dto.getEmail());
-        account.setFirstName(dto.getFirstName());
-        account.setLastName(dto.getFirstName());
+        account.setFirstName(updateRequest.getFirstName());
+        account.setLastName(updateRequest.getFirstName());
+        account.setEnabled(updateRequest.getEnabled());
+        accountRepository.save(account);
     }
 
-    public Account findUserById(Long id){
+    public void updateAccountEmail(Long id, AccountEmailUpdateRequest updateRequest) {
+        Account account = findUserById(id);
+        account.setEmail(updateRequest.getEmail());
+        account.setStatus(AccountStatus.EMAIL_CHANGED_NOT_CONFIRMED);
+        account.setPassword("");
+        accountRepository.saveAndFlush(account);
+        passwordRecoveryService.createPasswordRecoveryToken(account, MailModel.Type.PASSWORD_CREATION);
+    }
+
+    public void setAccountPassword(Account account, String password) {
+        account.setPassword(password);
+        accountRepository.save(account);
+    }
+
+    public void setAccountStatus(Account account, AccountStatus status) {
+        account.setStatus(status);
+        accountRepository.save(account);
+    }
+
+    public void setAccountStatus(String email, AccountStatus status) {
+        setAccountStatus(getAccountByEmail(email), status);
+    }
+
+    public Account findUserById(Long id) {
         return accountRepository
                 .findById(id)
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with id \"%d\" not found", id)));
+                .orElseThrow(() -> new AccountNotFoundException(String.format("User with id \"%d\" not found", id)));
     }
 
-    private void validateEmail(String email){
+    public Account getAccountByEmail(String email) {
+        return accountRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new AccountNotFoundException(String.format("User with email \"%s\" not found", email)));
+    }
+
+    private void validateEmail(String email) {
         if (accountRepository.existsByEmail(email)) {
             throw new EmailAlreadyTakenException(String.format("Email \"%s\" already exists!", email));
         }
     }
 
-    private Role findRole(RoleEnum role){
+    private Role findRole(RoleEnum role) {
         return roleRepository
                 .findByName(role.getName())
                 .orElseThrow(
-                        () -> new RoleNotFoundException(String.format("Role \"%s\" not found!", RoleEnum.USER))
+                        () -> new RoleNotFoundException(String.format("Role \"%s\" not found!", role))
                 );
     }
 
-    private Account createUser(UserRequest dto, Role role){
+    private Account createAccount(AccountRequest request, Role role) {
         return Account.builder()
-                .email(dto.getEmail())
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
+                .email(request.getEmail())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .roles(List.of(role))
+                .enabled(true)
+                .status(AccountStatus.ACCOUNT_CREATED)
                 .build();
     }
 }

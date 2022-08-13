@@ -1,12 +1,12 @@
 package pl.azebrow.harvest.request;
 
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
-public class UserRequest {
+@Data
+public class AccountUpdateRequest {
 
     private String firstName;
     private String lastName;
-    private String email;
+    private Boolean enabled;
 
 }

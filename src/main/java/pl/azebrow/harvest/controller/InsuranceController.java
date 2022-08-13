@@ -2,6 +2,7 @@ package pl.azebrow.harvest.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.request.InsuranceRequest;
 import pl.azebrow.harvest.response.InsuranceResponse;
@@ -30,6 +31,7 @@ public class InsuranceController {
                 .collect(Collectors.toList());
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void addPolicy(
             @RequestBody InsuranceRequest insuranceRequest
@@ -37,6 +39,7 @@ public class InsuranceController {
         insuranceService.addPolicy(insuranceRequest);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deletePolicy(
             @PathVariable Long id

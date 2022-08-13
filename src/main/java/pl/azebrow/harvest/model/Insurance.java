@@ -19,11 +19,17 @@ public class Insurance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private LocalDate validFrom;
+    @Column(nullable = false)
     private LocalDate validTo;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(
+            name = "employee_id",
+            referencedColumnName = "id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "FK_employee_insurance"))
     private Employee employee;
 
 }

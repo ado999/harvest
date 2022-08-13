@@ -18,12 +18,18 @@ public class PasswordRecoveryToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String token;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(
+            name = "user_id",
+            referencedColumnName = "id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "FK_account_password_recovery_token"))
     private Account account;
 
+    @Column(nullable = false)
     private LocalDateTime expiryDate;
 
     public PasswordRecoveryToken(Account account) {

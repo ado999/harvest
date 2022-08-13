@@ -8,14 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Builder
+@Getter
 public class MailModel {
-    @Getter private Type mailType;
-    @Getter private String to;
+    private Type mailType;
+    private String to;
     private String name;
     private String token;
     private LocalDateTime expiryTime;
 
-    public Map<String, Object> getModel(){
+    public Map<String, Object> getModel() {
         Map<String, Object> model = new HashMap<>();
         model.put("name", name);
         model.put("token", token);

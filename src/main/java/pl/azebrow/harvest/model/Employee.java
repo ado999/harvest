@@ -14,6 +14,7 @@ import java.util.HashSet;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(uniqueConstraints = {@UniqueConstraint(name = "UK_employee_code", columnNames = "email")})
 public class Employee {
 
     @Id

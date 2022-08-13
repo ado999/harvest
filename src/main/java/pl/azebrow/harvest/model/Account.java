@@ -15,6 +15,7 @@ import java.util.Collection;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(uniqueConstraints = {@UniqueConstraint(name = "UK_account_email", columnNames = "email")})
 public class Account implements UserDetails {
 
     @Id
@@ -23,22 +24,31 @@ public class Account implements UserDetails {
 
     private String firstName;
     private String lastName;
+
+    @Column(unique = true)
     private String email;
     private String password;
 
+    @Column(nullable = false)
     private Boolean enabled;
 
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
+
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    @JoinColumn(name = "employee_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "FK_employee_account"))
     private Employee employee;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "account_roles",
+    @JoinTable(name = "account_roles",
             joinColumns = @JoinColumn(
-                    name = "user_id", referencedColumnName = "id"),
+                    name = "user_id",
+                    referencedColumnName = "id",
+                    foreignKey = @ForeignKey(name = "FK_account_account_roles")),
             inverseJoinColumns = @JoinColumn(
-                    name = "role_id", referencedColumnName = "id"))
+                    name = "role_id",
+                    referencedColumnName = "id",
+                    foreignKey = @ForeignKey(name = "FK_role_account_role")))
     private Collection<Role> roles;
 
     @Override
