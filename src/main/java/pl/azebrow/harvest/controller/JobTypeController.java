@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/job-type")
-@Secured({RoleEnum.Constants.ADMIN})
+@Secured({RoleEnum.Constants.ADMIN, RoleEnum.Constants.STAFF})
 @RequiredArgsConstructor
 public class JobTypeController {
 
@@ -35,6 +35,7 @@ public class JobTypeController {
                 .collect(Collectors.toList());
     }
 
+    @Secured({RoleEnum.Constants.ADMIN})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void postJobType(
@@ -43,6 +44,7 @@ public class JobTypeController {
         jobTypeService.addJobType(jobTypeRequest);
     }
 
+    @Secured({RoleEnum.Constants.ADMIN})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
     public void setDisabled(

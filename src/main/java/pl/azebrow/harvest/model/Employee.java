@@ -14,14 +14,13 @@ import java.util.HashSet;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = {@UniqueConstraint(name = "UK_employee_code", columnNames = "email")})
+@Table(uniqueConstraints = {@UniqueConstraint(name = "UK_employee_code", columnNames = "code")})
 public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
     private String code;
 
     @OneToOne(mappedBy = "employee")
