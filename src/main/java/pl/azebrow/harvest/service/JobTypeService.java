@@ -10,6 +10,7 @@ import pl.azebrow.harvest.request.JobTypeRequest;
 import pl.azebrow.harvest.request.JobTypeUpdateRequest;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,5 +53,9 @@ public class JobTypeService {
                 .orElseThrow(
                         () -> new ResourceNotFoundException("Job type with id \"%d\" not found!", id)
                 );
+    }
+
+    public Collection<JobUnit> getJobUnits() {
+        return List.of(JobUnit.values());
     }
 }

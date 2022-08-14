@@ -9,6 +9,7 @@ import pl.azebrow.harvest.constants.RoleEnum;
 import pl.azebrow.harvest.request.JobTypeRequest;
 import pl.azebrow.harvest.request.JobTypeUpdateRequest;
 import pl.azebrow.harvest.response.JobTypeResponse;
+import pl.azebrow.harvest.response.JobUnitResponse;
 import pl.azebrow.harvest.service.JobTypeService;
 
 import java.util.Collection;
@@ -32,6 +33,15 @@ public class JobTypeController {
         return jobTypes
                 .stream()
                 .map(j -> mapper.map(j, JobTypeResponse.class))
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/units")
+    public Collection<JobUnitResponse> getJobUnits() {
+        var jobUnits = jobTypeService.getJobUnits();
+        return jobUnits
+                .stream()
+                .map(u -> mapper.map(u, JobUnitResponse.class))
                 .collect(Collectors.toList());
     }
 
