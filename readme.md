@@ -13,7 +13,7 @@ Application for work management
 
 [Documentation](http://localhost:8080/swagger-ui/index.html)
 
-Note: If you see pet store instead of real endpoints, just login [here](http://localhost:8080/swagger-ui/index.html).
+Note: If you see pet store instead of real endpoints, just login [here](http://localhost:8080/login).
 Default account is `janusz@admin.qp:janusz`
 
 
