@@ -1,5 +1,8 @@
 package pl.azebrow.harvest.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,11 @@ public class InsuranceController {
 
     private final ModelMapper mapper;
 
+    @Operation(summary = "Get employee insurance policies by employee id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "No employee found with the given id")
+    })
     @GetMapping
     public Collection<InsuranceResponse> getEmployeePolicies(
             @RequestParam Long employeeId
@@ -31,6 +39,11 @@ public class InsuranceController {
                 .collect(Collectors.toList());
     }
 
+    @Operation(summary = "Add employee's insurance policy")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "No employee found with the given id")
+    })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void addPolicy(
@@ -39,6 +52,12 @@ public class InsuranceController {
         insuranceService.addPolicy(insuranceRequest);
     }
 
+
+    @Operation(summary = "Remove insurance policy")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "No policy found with the given id")
+    })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deletePolicy(

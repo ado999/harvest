@@ -5,7 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-import pl.azebrow.harvest.constants.RoleEnum;
+import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.request.LocationRequest;
 import pl.azebrow.harvest.request.LocationUpdateRequest;
 import pl.azebrow.harvest.response.LocationResponse;

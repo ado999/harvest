@@ -3,7 +3,7 @@ package pl.azebrow.harvest.config;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import pl.azebrow.harvest.constants.RoleEnum;
+import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.model.Role;
 import pl.azebrow.harvest.repository.RoleRepository;
 

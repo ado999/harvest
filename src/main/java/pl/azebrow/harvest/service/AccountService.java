@@ -2,7 +2,7 @@ package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.azebrow.harvest.constants.RoleEnum;
+import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.exeption.AccountNotFoundException;
 import pl.azebrow.harvest.exeption.EmailAlreadyTakenException;
 import pl.azebrow.harvest.exeption.RoleNotFoundException;
@@ -67,6 +67,10 @@ public class AccountService {
 
     public void updateAccountEmail(Long id, AccountEmailUpdateRequest updateRequest) {
         Account account = findUserById(id);
+        if (account.getEmail().equals(updateRequest.getEmail())) {
+            return;
+        }
+        validateEmail(updateRequest.getEmail());
         account.setEmail(updateRequest.getEmail());
         account.setStatus(AccountStatus.EMAIL_CHANGED_NOT_CONFIRMED);
         account.setPassword("");

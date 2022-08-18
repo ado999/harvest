@@ -1,4 +1,4 @@
-package pl.azebrow.harvest.constants;
+package pl.azebrow.harvest.constant;
 
 public enum RoleEnum {
     ADMIN(Constants.ADMIN),
@@ -9,7 +9,7 @@ public enum RoleEnum {
 
     private final String name;
 
-    private RoleEnum(String name) {
+    RoleEnum(String name) {
         this.name = name;
     }
 

@@ -8,7 +8,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 
 @RequiredArgsConstructor
 public class JobSpecification implements Specification<Job> {
@@ -33,17 +35,25 @@ public class JobSpecification implements Specification<Job> {
     }
 
     private Predicate dateFromPredicate(Root<Job> root, CriteriaQuery<?> q, CriteriaBuilder cb) {
-        return cb.lessThanOrEqualTo(
-                root.get("date"),
-                LocalDateTime.parse((CharSequence) criteria.getValue())
-        );
+        try {
+            return cb.greaterThanOrEqualTo(
+                    root.get("date"),
+                    LocalDate.parse((CharSequence) criteria.getValue()).atTime(LocalTime.MIN)
+            );
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 
     private Predicate dateToPredicate(Root<Job> root, CriteriaQuery<?> q, CriteriaBuilder cb) {
-        return cb.greaterThanOrEqualTo(
-                root.get("date"),
-                LocalDateTime.parse((CharSequence) criteria.getValue())
-        );
+        try {
+            return cb.lessThanOrEqualTo(
+                    root.get("date"),
+                    LocalDate.parse((CharSequence) criteria.getValue()).atTime(LocalTime.MAX)
+            );
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 
 }

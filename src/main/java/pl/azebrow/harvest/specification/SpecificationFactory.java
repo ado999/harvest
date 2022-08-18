@@ -1,7 +1,6 @@
 package pl.azebrow.harvest.specification;
 
 import org.springframework.data.jpa.domain.Specification;
-import pl.azebrow.harvest.model.Job;
 
 public class SpecificationFactory<T> {
 

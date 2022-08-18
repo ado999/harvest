@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.azebrow.harvest.constants.RoleEnum;
+import pl.azebrow.harvest.constant.RoleEnum;
 
 @RestController
 @RequestMapping("/api/v1/user")
