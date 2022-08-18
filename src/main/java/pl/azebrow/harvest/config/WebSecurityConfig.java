@@ -39,7 +39,6 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/swagger-ui.html", "/swagger-ui/**").permitAll()
                 .antMatchers("/api/v1/recovery/**").anonymous()
                 .anyRequest().authenticated().and()
                 .formLogin();

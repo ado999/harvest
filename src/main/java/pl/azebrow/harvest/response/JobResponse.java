@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 public class JobResponse {
     private Long id;
     private LocalDateTime date;
-    private LocationResponse location;
-    private EmployeeResponse employee;
-    private String jobTypeTitle;
-    private String jobTypeUnit;
+    private Long locationId;
+    private Long employeeId;
+    private JobTypeResponse jobType;
     private BigDecimal quantity;
     private BigDecimal rate;
     private BigDecimal totalAmount;
+    private AccountResponse approver;
 
 }

@@ -1,6 +1,9 @@
 package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.exeption.EntityDisabledException;
 import pl.azebrow.harvest.exeption.ResourceNotFoundException;
@@ -25,10 +28,13 @@ public class JobService {
         Account approver = callerFacade.getCaller();
         Employee employee = employeeService.getEmployeeById(jobRequest.getEmployeeId());
         Location location = locationService.getLocationById(jobRequest.getLocationId());
+        JobType jobType = jobTypeService.getJobTypeById(jobRequest.getJobTypeId());
         if (location.getDisabled()) {
             throw new EntityDisabledException(String.format("Location \"%s\" is disabled", location.getDescription()));
         }
-        JobType jobType = jobTypeService.getJobTypeById(jobRequest.getJobTypeId());
+        if (jobType.getDisabled()) {
+            throw new EntityDisabledException(String.format("Job type \"%s\" is disabled", jobType.getTitle()));
+        }
         BigDecimal rate = jobRequest.getRate();
         BigDecimal quantity = jobRequest.getQuantity();
         BigDecimal totalAmount = rate.multiply(quantity);
@@ -45,11 +51,15 @@ public class JobService {
         jobRepository.save(job);
     }
 
-    private Job getJobById(Long id) {
+    public Job getJobById(Long id) {
         return jobRepository
                 .findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("Job with id \"%d\" not found!", id)
                 );
+    }
+
+    public Page<Job> findJobs(Specification<Job> specs, PageRequest pageRequest){
+        return jobRepository.findAll(specs, pageRequest);
     }
 }

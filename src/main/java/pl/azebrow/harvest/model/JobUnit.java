@@ -2,7 +2,7 @@ package pl.azebrow.harvest.model;
 
 public enum JobUnit {
     TIME("h"),
-    AREA("ar"),
+    AREA("m2"),
     QUANTITY("szt"),
     WEIGHT("kg");
 
