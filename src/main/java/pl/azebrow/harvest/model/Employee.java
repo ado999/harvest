@@ -29,4 +29,8 @@ public class Employee {
     @OneToMany(mappedBy = "employee")
     private Collection<Insurance> policies = new HashSet<>();
 
+    private String phoneNumber;
+
+    private Boolean passportTaken;
+
 }

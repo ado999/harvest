@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.exeption.EmployeeNotFoundException;
 import pl.azebrow.harvest.model.Employee;
 import pl.azebrow.harvest.repository.EmployeeRepository;
+import pl.azebrow.harvest.request.EmployeeUpdateRequest;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -14,6 +15,13 @@ import java.util.stream.Collectors;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+
+    public void updateEmployee(Long id, EmployeeUpdateRequest updateRequest) {
+        var employee = getEmployeeById(id);
+        employee.setPassportTaken(updateRequest.getPassportTaken());
+        employee.setPhoneNumber(updateRequest.getPhoneNumber());
+        employeeRepository.save(employee);
+    }
 
     public Employee getEmployeeByCode(String code) {
         return employeeRepository
