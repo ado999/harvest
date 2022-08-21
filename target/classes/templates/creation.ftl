@@ -6,6 +6,7 @@
 <p>ACCOUNT CREATED!</p>
 <p>Please click this <a href="http://localhost:8080/recovery/${token}">link</a> to change your password.</p>
 <p>This password reset link is only valid for the next 10 minutes.<br>If you did not request a password reset, please ignore this email.</p>
+<img src="cid:qr-code">
 
 </body>
 </html>

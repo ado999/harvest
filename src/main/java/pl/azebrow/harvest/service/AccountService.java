@@ -16,6 +16,7 @@ import pl.azebrow.harvest.repository.RoleRepository;
 import pl.azebrow.harvest.request.AccountEmailUpdateRequest;
 import pl.azebrow.harvest.request.AccountRequest;
 import pl.azebrow.harvest.request.AccountUpdateRequest;
+import pl.azebrow.harvest.request.EmployeeRequest;
 import pl.azebrow.harvest.utils.EmployeeCodeGenerator;
 
 import javax.annotation.PostConstruct;
@@ -38,13 +39,14 @@ public class AccountService {
     }
 
     //todo update to new EmployeeRequest
-    public void createEmployee(AccountRequest dto) {
-        validateEmail(dto.getEmail());
+    public void createEmployee(EmployeeRequest request) {
+        validateEmail(request.getEmail());
         Role accountRole = findRole(RoleEnum.USER);
-        Account account = createAccount(dto, accountRole);
+        Account account = createAccount(request.toAccountRequest(), accountRole);
         Employee employee = Employee.builder()
-                .code(codeGenerator.generateCode(dto.getLastName()))
-                .passportTaken(false)
+                .code(codeGenerator.generateCode(request.getLastName()))
+                .passportTaken(request.getPassportTaken())
+                .phoneNumber(request.getPhoneNumber())
                 .build();
         account.setEmployee(employee);
         accountRepository.saveAndFlush(account);

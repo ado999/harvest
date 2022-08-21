@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.constant.RoleEnum;
-import pl.azebrow.harvest.request.AccountRequest;
+import pl.azebrow.harvest.request.EmployeeRequest;
 import pl.azebrow.harvest.request.EmployeeUpdateRequest;
 import pl.azebrow.harvest.response.EmployeeResponse;
 import pl.azebrow.harvest.service.AccountService;
@@ -75,7 +75,7 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void createEmployeeAccount(
-            @RequestBody AccountRequest request) {
+            @RequestBody EmployeeRequest request) {
         accountService.createEmployee(request);
     }
 
