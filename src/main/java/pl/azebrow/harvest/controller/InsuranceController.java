@@ -6,7 +6,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.request.InsuranceRequest;
 import pl.azebrow.harvest.response.InsuranceResponse;
 import pl.azebrow.harvest.service.InsuranceService;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/insurance")
+@Secured({RoleEnum.Constants.ADMIN, RoleEnum.Constants.STAFF})
 @RequiredArgsConstructor
 public class InsuranceController {
 

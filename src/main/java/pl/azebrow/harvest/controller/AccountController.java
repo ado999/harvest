@@ -15,7 +15,7 @@ import pl.azebrow.harvest.service.AccountService;
 
 @RestController
 @RequestMapping("/api/v1/account")
-@Secured(RoleEnum.Constants.ADMIN)
+@Secured({RoleEnum.Constants.STAFF, RoleEnum.Constants.ADMIN})
 @RequiredArgsConstructor
 public class AccountController {
 

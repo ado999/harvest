@@ -35,6 +35,7 @@ public class LocationController {
                 .collect(Collectors.toList());
     }
 
+    @Secured(RoleEnum.Constants.ADMIN)
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void createLocation(
