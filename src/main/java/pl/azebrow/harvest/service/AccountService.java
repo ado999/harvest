@@ -37,16 +37,19 @@ public class AccountService {
         passwordRecoveryService.initComponent(this);
     }
 
+    //todo update to new EmployeeRequest
     public void createEmployee(AccountRequest dto) {
         validateEmail(dto.getEmail());
         Role accountRole = findRole(RoleEnum.USER);
         Account account = createAccount(dto, accountRole);
         Employee employee = Employee.builder()
                 .code(codeGenerator.generateCode(dto.getLastName()))
+                .passportTaken(false)
                 .build();
         account.setEmployee(employee);
         accountRepository.saveAndFlush(account);
-        passwordRecoveryService.createPasswordRecoveryToken(account, MailModel.Type.PASSWORD_CREATION);
+        MailModel model = new MailModel(account, MailModel.Type.PASSWORD_CREATION);
+        passwordRecoveryService.createPasswordRecoveryToken(model);
     }
 
     public void createStaffAccount(AccountRequest dto) {
@@ -54,7 +57,8 @@ public class AccountService {
         Role staffRole = findRole(RoleEnum.STAFF);
         Account account = createAccount(dto, staffRole);
         accountRepository.saveAndFlush(account);
-        passwordRecoveryService.createPasswordRecoveryToken(account, MailModel.Type.PASSWORD_CREATION);
+        MailModel model = new MailModel(account, MailModel.Type.PASSWORD_CREATION);
+        passwordRecoveryService.createPasswordRecoveryToken(model);
     }
 
     public void updateAccount(Long id, AccountUpdateRequest updateRequest) {
@@ -75,7 +79,8 @@ public class AccountService {
         account.setStatus(AccountStatus.EMAIL_CHANGED_NOT_CONFIRMED);
         account.setPassword("");
         accountRepository.saveAndFlush(account);
-        passwordRecoveryService.createPasswordRecoveryToken(account, MailModel.Type.PASSWORD_CREATION);
+        MailModel model = new MailModel(account, MailModel.Type.PASSWORD_CREATION);
+        passwordRecoveryService.createPasswordRecoveryToken(model);
     }
 
     public void setAccountPassword(Account account, String password) {

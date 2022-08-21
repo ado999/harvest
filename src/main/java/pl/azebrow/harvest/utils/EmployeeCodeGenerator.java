@@ -28,7 +28,7 @@ public class EmployeeCodeGenerator {
 
     private String generatePrefix(String name) {
         int len = name.length();
-        String nameSubstring = len < PREFIX_LENGTH ? name : name.substring(0, PREFIX_LENGTH);
+        String nameSubstring = len <= PREFIX_LENGTH ? name : name.substring(0, PREFIX_LENGTH);
         String prefix = String
                 .format("%-" + PREFIX_LENGTH + "s", nameSubstring)
                 .replace(' ', 'X');
@@ -38,6 +38,10 @@ public class EmployeeCodeGenerator {
     private String generatePostfix() {
         Random random = new Random();
         int number = random.nextInt();
+        number = Math.abs(number);
+        if (number < 10000) {
+            number += 10000;
+        }
         return String.valueOf(number).substring(0, POSTFIX_LENGTH);
     }
 

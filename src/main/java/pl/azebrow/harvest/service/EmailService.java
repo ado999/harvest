@@ -12,14 +12,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import pl.azebrow.harvest.mail.MailModel;
 import pl.azebrow.harvest.model.AccountStatus;
+import pl.azebrow.harvest.utils.QrGenerator;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.mail.util.ByteArrayDataSource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 @Service
 public class EmailService {
+
+    private final static String QR_CODE_CONTENT_ID = "qr-code";
 
     private final static String PWD_RECOVERY_TEMPLATE = "recovery.ftl";
     private final static String PWD_CREATION_TEMPLATE = "creation.ftl";
@@ -27,15 +31,19 @@ public class EmailService {
     private final Configuration emailConfig;
     private final String sourceAddress;
 
+    private final QrGenerator qrGenerator;
+
     private AccountService accountService = null;
 
     public EmailService(
             JavaMailSender emailSender,
             @Qualifier("freeMarkerConfig") Configuration emailConfig,
-            @Qualifier("sourceEmailAddress") String sourceAddress) {
+            @Qualifier("sourceEmailAddress") String sourceAddress,
+            QrGenerator qrGenerator) {
         this.emailSender = emailSender;
         this.emailConfig = emailConfig;
         this.sourceAddress = sourceAddress;
+        this.qrGenerator = qrGenerator;
     }
 
     public void initComponent(AccountService accountService) {
@@ -81,6 +89,8 @@ public class EmailService {
             helper.setTo(mailModel.getTo());
             helper.setSubject(mailModel.getSubject());
             helper.setText(html, true);
+            byte[] qrBytes = qrGenerator.generate(mailModel.getStringCode());
+            helper.addInline(QR_CODE_CONTENT_ID, new ByteArrayDataSource(qrBytes, "image/png"));
         } catch (MessagingException e) {
             e.printStackTrace();
             accountService.setAccountStatus(mailModel.getTo(), AccountStatus.ERROR_SENDING_EMAIL);

@@ -31,23 +31,18 @@ public class PasswordRecoveryService {
         emailService.initComponent(accountService);
     }
 
-    public void createPasswordRecoveryToken(Account account, MailModel.Type type) {
-        PasswordRecoveryToken token = new PasswordRecoveryToken(account);
+    public void createPasswordRecoveryToken(MailModel model) {
+        PasswordRecoveryToken token = new PasswordRecoveryToken(model.getAccount());
         tokenRepository.save(token);
 
-        MailModel model = MailModel
-                .builder()
-                .name(account.getFirstName())
-                .to(account.getEmail())
-                .token(token.getToken())
-                .mailType(type)
-                .build();
+        model.setToken(token.getToken());
         emailService.sendEmail(model);
     }
 
     public void createPasswordRecoveryToken(String email, MailModel.Type type) {
         Account account = accountService.getAccountByEmail(email);
-        createPasswordRecoveryToken(account, type);
+        MailModel model = new MailModel(account, type);
+        createPasswordRecoveryToken(model);
     }
 
     public void recoverPassword(String tokenString, PasswordChangeRequest request) {
