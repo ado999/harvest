@@ -47,6 +47,11 @@ public class Job {
             foreignKey = @ForeignKey(name = "FK_job_type_job"))
     private JobType jobType;
 
+    @OneToOne
+    @JoinColumn(name = "balance_change_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "FK_balance_change_job"))
+    @Column(nullable = false)
+    private BalanceChange balanceChange;
+
     @Column(nullable = false)
     private BigDecimal quantity;
 
