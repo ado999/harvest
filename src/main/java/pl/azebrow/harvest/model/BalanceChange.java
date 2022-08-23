@@ -32,6 +32,4 @@ public class BalanceChange {
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdDate;
-
-
 }
