@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.HashSet;
 
 @Entity
 @Data
@@ -27,7 +26,10 @@ public class Employee {
     private Account account;
 
     @OneToMany(mappedBy = "employee")
-    private Collection<Insurance> policies = new HashSet<>();
+    private Collection<Insurance> policies;
+
+    @OneToMany(mappedBy = "employee")
+    private Collection<Payment> payments;
 
     private String phoneNumber;
 

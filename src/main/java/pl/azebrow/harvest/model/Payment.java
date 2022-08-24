@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @EntityListeners(AuditingEntityListener.class)
-public class BalanceChange {
+public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,11 +21,16 @@ public class BalanceChange {
     @JoinColumn(name = "employee_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "FK_employee_balance_change"))
     private Employee employee;
 
-    @OneToOne(mappedBy = "balance_change")
-    private Job job;
+    @ManyToOne
+    @JoinColumn(
+            name = "account_id",
+            referencedColumnName = "id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "FK_account_payment"))
+    private Account payer;
 
-    @Enumerated(EnumType.STRING)
-    private BalanceChangeType type;
+//    @Enumerated(EnumType.STRING)
+//    private PaymentType type;
 
     private BigDecimal amount;
 
