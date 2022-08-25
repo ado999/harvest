@@ -7,6 +7,7 @@ import pl.azebrow.harvest.model.Employee;
 import pl.azebrow.harvest.repository.EmployeeRepository;
 import pl.azebrow.harvest.request.EmployeeUpdateRequest;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,14 @@ public class EmployeeService {
                 .orElseThrow(
                         () -> new EmployeeNotFoundException(String.format("Employee with code \"%s\" not found!", code))
                 );
+    }
+
+    public void updateEmployeeBalance(Long id, BigDecimal amount) {
+        var employee = getEmployeeById(id);
+        var oldBalance = employee.getBalance();
+        var newBalance = oldBalance.add(amount);
+        employee.setBalance(newBalance);
+        employeeRepository.save(employee);
     }
 
     public Employee getEmployeeById(Long id) {

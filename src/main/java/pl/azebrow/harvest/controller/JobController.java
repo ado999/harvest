@@ -69,7 +69,7 @@ public class JobController {
     public void postJob(
             @RequestBody JobRequest jobRequest
     ) {
-        jobService.addOrUpdateJob(jobRequest, null);
+        jobService.addJob(jobRequest);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -78,7 +78,7 @@ public class JobController {
             @PathVariable Long id,
             @RequestBody JobRequest jobRequest
     ) {
-        jobService.addOrUpdateJob(jobRequest, id);
+        jobService.updateJob(jobRequest, id);
     }
 
 }

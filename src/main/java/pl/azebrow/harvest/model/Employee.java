@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Collection;
 
 @Entity
@@ -35,4 +36,5 @@ public class Employee {
 
     private Boolean passportTaken;
 
+    private BigDecimal balance;
 }
