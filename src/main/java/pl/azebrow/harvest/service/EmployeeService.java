@@ -2,6 +2,7 @@ package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.azebrow.harvest.exeption.EmployeeNotFoundException;
 import pl.azebrow.harvest.model.Employee;
 import pl.azebrow.harvest.repository.EmployeeRepository;
@@ -12,6 +13,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class EmployeeService {
 
