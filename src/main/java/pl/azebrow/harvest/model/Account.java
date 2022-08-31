@@ -46,7 +46,7 @@ public class Account implements UserDetails {
             inverseJoinColumns = @JoinColumn(
                     name = "role_id",
                     referencedColumnName = "id",
-                    foreignKey = @ForeignKey(name = "FK_role_account_role")))
+                    foreignKey = @ForeignKey(name = "FK_role_account_roles")))
     private Collection<Role> roles;
 
     @Override

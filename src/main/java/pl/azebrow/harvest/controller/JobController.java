@@ -60,7 +60,7 @@ public class JobController {
         params.forEach(sb::with);
 
         return jobService
-                .findJobs(sb.build(), PageRequest.of(page, size, Sort.by("date")))
+                .findJobsWithPagination(sb.build(), PageRequest.of(page, size, Sort.by("date")))
                 .map(j -> mapper.map(j, JobResponse.class));
     }
 
@@ -69,7 +69,7 @@ public class JobController {
     public void postJob(
             @RequestBody JobRequest jobRequest
     ) {
-        jobService.addOrUpdateJob(jobRequest, null);
+        jobService.addJob(jobRequest);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -78,7 +78,7 @@ public class JobController {
             @PathVariable Long id,
             @RequestBody JobRequest jobRequest
     ) {
-        jobService.addOrUpdateJob(jobRequest, id);
+        jobService.updateJob(jobRequest, id);
     }
 
 }
