@@ -60,7 +60,7 @@ public class JobController {
         params.forEach(sb::with);
 
         return jobService
-                .findJobs(sb.build(), PageRequest.of(page, size, Sort.by("date")))
+                .findJobsWithPagination(sb.build(), PageRequest.of(page, size, Sort.by("date")))
                 .map(j -> mapper.map(j, JobResponse.class));
     }
 

@@ -52,7 +52,7 @@ public class PaymentController {
     public Collection<PaymentResponse> getPaymentByEmployeeId(
             @PathVariable Long id
     ) {
-        var payment = paymentService.getPaymentByEmployeeId(id);
+        var payment = paymentService.getPaymentsByEmployeeId(id);
         return payment
                 .stream()
                 .map(p -> mapper.map(p, PaymentResponse.class))

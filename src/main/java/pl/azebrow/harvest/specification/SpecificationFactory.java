@@ -14,6 +14,7 @@ public class SpecificationFactory<T> {
     public Specification<T> getSpecification(SearchCriteria criteria){
         return switch (classSimpleName){
             case "Job" -> (Specification<T>) new JobSpecification(criteria);
+            case "Payment" -> (Specification<T>) new PaymentSpecification(criteria);
             default -> null;
         };
     }

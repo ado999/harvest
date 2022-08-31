@@ -8,7 +8,7 @@ UPDATE employee
 		FROM (
 			SELECT employee_id, total_amount
 			FROM job
-			UNION
+			UNION ALL
 			SELECT employee_id, amount
 			FROM payment
 		) tab

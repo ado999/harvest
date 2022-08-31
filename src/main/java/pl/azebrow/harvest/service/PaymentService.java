@@ -1,6 +1,7 @@
 package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.exeption.ResourceNotFoundException;
 import pl.azebrow.harvest.model.Employee;
@@ -46,9 +47,13 @@ public class PaymentService {
                 );
     }
 
-    public Collection<Payment> getPaymentByEmployeeId(Long employeeId) {
+    public Collection<Payment> getPaymentsByEmployeeId(Long employeeId) {
         var employee = employeeService.getEmployeeById(employeeId);
         return paymentRepository
                 .findByEmployee(employee);
+    }
+
+    public Collection<Payment> findPayments(Specification<Payment> specs) {
+        return paymentRepository.findAll(specs);
     }
 }

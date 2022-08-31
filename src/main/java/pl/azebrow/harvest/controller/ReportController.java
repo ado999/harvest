@@ -6,12 +6,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.service.ReportService;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
+import pl.azebrow.harvest.settlement.EmployeeSettlementResponse;
 
 @RestController
 @RequestMapping("/api/v1/report")
@@ -24,16 +19,13 @@ public class ReportController {
     private final ModelMapper mapper;
 
     @GetMapping("/employee/{employeeId}")
-    public void getEmployeeSettlement(
+    public EmployeeSettlementResponse getEmployeeSettlement(
             @PathVariable Long employeeId,
-            @RequestParam LocalDate from,
-            @RequestParam(required = false) LocalDate to,
-            @RequestParam(defaultValue = "[]") Long[] location
+            @RequestParam String from,
+            @RequestParam String to
     ) {
-        LocalDateTime dateTo = to != null ? to.atTime(LocalTime.MAX) : LocalDateTime.MAX;
-        LocalDateTime dateFrom = from.atTime(LocalTime.MIN);
-        List<Long> locationIds = Arrays.stream(location).toList();
-        reportService.getEmployeeSettlement(employeeId, dateFrom, dateTo, locationIds);
+        var response = reportService.getEmployeeSettlement(employeeId, from, to);
+        return mapper.map(response, EmployeeSettlementResponse.class);
     }
 
 }

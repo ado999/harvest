@@ -13,6 +13,8 @@ import pl.azebrow.harvest.repository.JobRepository;
 import pl.azebrow.harvest.request.JobRequest;
 import pl.azebrow.harvest.utils.CallerFacade;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -72,7 +74,11 @@ public class JobService {
                 );
     }
 
-    public Page<Job> findJobs(Specification<Job> specs, PageRequest pageRequest) {
+    public Page<Job> findJobsWithPagination(Specification<Job> specs, PageRequest pageRequest) {
         return jobRepository.findAll(specs, pageRequest);
+    }
+
+    public List<Job> findJobs(Specification<Job> specs) {
+        return jobRepository.findAll(specs);
     }
 }
