@@ -16,9 +16,11 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @RequiredArgsConstructor
 public class InsuranceUtils {
 
+    //todo is this still class still needed?
+
     private final InsuranceRepository insuranceRepository;
 
-    public Boolean isInsuranceValid(Employee employee){
+    public Boolean hasValidInsurance(Employee employee) {
         LocalDate now = LocalDate.now();
         Collection<Insurance> policies = insuranceRepository.findAllByEmployee(employee);
         return policies
@@ -27,7 +29,7 @@ public class InsuranceUtils {
     }
 
     public Integer getRemainingValidityInDays(Employee employee){
-        if (!isInsuranceValid(employee)){
+        if (!hasValidInsurance(employee)) {
             return -1;
         }
         LocalDate now = LocalDate.now();

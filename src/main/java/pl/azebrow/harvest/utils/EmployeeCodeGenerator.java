@@ -10,8 +10,8 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class EmployeeCodeGenerator {
 
-    private final int PREFIX_LENGTH = 3;
-    private final int POSTFIX_LENGTH = 5;
+    private final static int PREFIX_LENGTH = 3;
+    private final static int POSTFIX_LENGTH = 5;
 
     private final EmployeeRepository employeeRepository;
 
@@ -20,7 +20,7 @@ public class EmployeeCodeGenerator {
         String postfix = generatePostfix();
         String code = prefix.concat(postfix);
         //todo this is risky
-        if(employeeRepository.existsByCode(code)) {
+        if (employeeRepository.existsByCode(code)) {
             return generateCode(name);
         }
         return code;
