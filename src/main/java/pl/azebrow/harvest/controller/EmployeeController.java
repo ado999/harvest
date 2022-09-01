@@ -60,11 +60,22 @@ public class EmployeeController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "404", description = "No employee found with the given code")
     })
+
     @GetMapping("/id/{id}")
     public EmployeeResponse getEmployeeById(
             @PathVariable Long id) {
         var employee = employeeService.getEmployeeById(id);
         return mapper.map(employee, EmployeeResponse.class);
+    }
+
+    @GetMapping("/search/{query}")
+    public Collection<EmployeeResponse> searchEmployee(
+            @PathVariable String query) {
+        var employees = employeeService.searchEmployees(query);
+        return employees
+                .stream()
+                .map(e -> mapper.map(e, EmployeeResponse.class))
+                .collect(Collectors.toList());
     }
 
     @Operation(summary = "Create employee account")

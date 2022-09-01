@@ -57,4 +57,8 @@ public class EmployeeService {
                 .filter(e -> showDisabled || e.getAccount().getEnabled())
                 .collect(Collectors.toList());
     }
+
+    public Collection<Employee> searchEmployees(String query) {
+        return employeeRepository.findAllByQuery(query);
+    }
 }
