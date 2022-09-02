@@ -28,4 +28,13 @@ public class ReportController {
         return mapper.map(response, EmployeeSettlementResponse.class);
     }
 
+    @GetMapping("/employee/{employeeId}/report")
+    public void generateEmployeeSettlementReport(
+            @PathVariable Long employeeId,
+            @RequestParam String from,
+            @RequestParam String to
+    ) {
+        reportService.generateEmployeeSettlementReport(employeeId, from, to);
+    }
+
 }

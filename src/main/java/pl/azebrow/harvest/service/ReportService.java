@@ -1,15 +1,24 @@
 package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
+import org.jxls.common.Context;
+import org.jxls.util.JxlsHelper;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.azebrow.harvest.model.Job;
 import pl.azebrow.harvest.model.Payment;
 import pl.azebrow.harvest.settlement.EmployeeSettlement;
+import pl.azebrow.harvest.settlement.datasource.EmployeeSettlementDataSource;
 import pl.azebrow.harvest.specification.SpecificationBuilder;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @Transactional
@@ -19,8 +28,25 @@ public class ReportService {
     private final EmployeeService employeeService;
     private final JobService jobService;
     private final PaymentService paymentService;
-    private final SettlementService settlementService;
-    private final LocationService locationService;
+
+    public void generateEmployeeSettlementReport(Long employeeId,
+                                                 String from,
+                                                 String to) {
+        var settlement = getEmployeeSettlement(employeeId, from, to);
+        var datasource = new EmployeeSettlementDataSource(settlement);
+        try (InputStream is = new ClassPathResource("templates/employee_report_template.xls").getInputStream()) {
+            var f = new File("result.xls");
+            f.createNewFile();
+            var os = new FileOutputStream(f, false);
+            Context ctx = new Context();
+            ctx.putVar("ds", datasource);
+            JxlsHelper.getInstance().processTemplateAtCell(is, os, ctx, "Result!A1");
+            is.close();
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public EmployeeSettlement getEmployeeSettlement(Long employeeId,
                                                     String from,
@@ -56,6 +82,7 @@ public class ReportService {
                 .paymentsAmount(paymentsAmount)
                 .totalAmount(jobsAmount.add(paymentsAmount))
                 .totalBalance(employee.getBalance())
+                .reportGenerationTime(LocalDateTime.now())
                 .build();
     }
 }

@@ -68,6 +68,7 @@ public class EmployeeController {
         return mapper.map(employee, EmployeeResponse.class);
     }
 
+    @Operation(summary = "Search employees by string in first name, last name, email or code")
     @GetMapping("/search/{query}")
     public Collection<EmployeeResponse> searchEmployee(
             @PathVariable String query) {

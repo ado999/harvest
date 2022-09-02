@@ -10,6 +10,7 @@ import pl.azebrow.harvest.model.Payment;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Data
@@ -17,6 +18,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmployeeSettlement {
+    private LocalDateTime reportGenerationTime;
     private Employee employee;
     private LocalDate dateFrom;
     private LocalDate dateTo;
