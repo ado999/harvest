@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -43,10 +41,19 @@ public class ReportController {
     ) {
         var data = reportService.generateEmployeeSettlementReport(employeeId, from, to);
         var resource = new ByteArrayResource(data);
-        var headers = new HttpHeaders();
-        headers.setContentDisposition(ContentDisposition.inline().build());
         return ResponseEntity.ok()
-                .headers(headers)
+                .body(resource);
+    }
+
+    @GetMapping(value = "/locations/report",
+            produces = "application/vnd.ms-excel")
+    public ResponseEntity<Resource> generateLocationSettlementReport(
+            @RequestParam String from,
+            @RequestParam String to
+    ) {
+        var data = reportService.generateLocationSettlementReport(from, to);
+        var resource = new ByteArrayResource(data);
+        return ResponseEntity.ok()
                 .body(resource);
     }
 

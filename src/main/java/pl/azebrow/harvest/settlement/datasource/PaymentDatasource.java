@@ -7,11 +7,11 @@ import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 
 @Getter
-public class PaymentDataSource {
+public class PaymentDatasource {
     private final String date;
     private final BigDecimal amount;
 
-    public PaymentDataSource(Payment payment) {
+    public PaymentDatasource(Payment payment) {
         var dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         date = payment.getCreatedDate().format(dateFormatter);
         amount = payment.getAmount();
