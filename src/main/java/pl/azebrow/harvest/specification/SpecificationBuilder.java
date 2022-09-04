@@ -5,29 +5,29 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpecificationBuilder<T> {
+public class SpecificationBuilder {
 
     private final List<SearchCriteria> criteriaList;
-    private final SpecificationFactory<T> specFactory;
+    private final SpecificationFactory specFactory;
 
-    public SpecificationBuilder(Class<T> clazz) {
+    public SpecificationBuilder() {
         criteriaList = new ArrayList<>();
-        specFactory = new SpecificationFactory<>(clazz);
+        specFactory = new SpecificationFactory();
     }
 
-    public SpecificationBuilder<T> with(String key, Object value) {
+    public SpecificationBuilder with(String key, Object value) {
         criteriaList.add(new SearchCriteria(key, value));
         return this;
     }
 
-    public Specification<T> build() {
+    public <T> Specification<T> build(Class<T> clazz) {
         if (criteriaList.isEmpty()) {
             return null;
         }
 
         List<Specification<T>> specs = criteriaList
                 .stream()
-                .map(specFactory::getSpecification)
+                .map(c -> specFactory.toSpecification(c, clazz))
                 .toList();
 
         Specification<T> result = specs.get(0);

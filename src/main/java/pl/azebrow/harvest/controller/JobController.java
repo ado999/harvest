@@ -56,11 +56,11 @@ public class JobController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "25") Integer size
     ) {
-        SpecificationBuilder<Job> sb = new SpecificationBuilder<>(Job.class);
+        var sb = new SpecificationBuilder();
         params.forEach(sb::with);
 
         return jobService
-                .findJobsWithPagination(sb.build(), PageRequest.of(page, size, Sort.by("date")))
+                .findJobsWithPagination(sb.build(Job.class), PageRequest.of(page, size, Sort.by("date")))
                 .map(j -> mapper.map(j, JobResponse.class));
     }
 
