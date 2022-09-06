@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.request.AccountEmailUpdateRequest;
 import pl.azebrow.harvest.request.AccountRequest;
 import pl.azebrow.harvest.request.AccountUpdateRequest;
+import pl.azebrow.harvest.response.AccountResponse;
 import pl.azebrow.harvest.service.AccountService;
 
 @RestController
@@ -20,6 +22,13 @@ import pl.azebrow.harvest.service.AccountService;
 public class AccountController {
 
     private final AccountService accountService;
+    private final ModelMapper mapper;
+
+    @GetMapping("/{id}")
+    public AccountResponse getAccount(@PathVariable Long id) {
+        var account = accountService.findAccountById(id);
+        return mapper.map(account, AccountResponse.class);
+    }
 
     @Operation(summary = "Create staff account")
     @ApiResponses({

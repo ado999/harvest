@@ -24,7 +24,7 @@ public class MailModel {
         this.account = account;
         this.to = account.getEmail();
         this.name = account.getFirstName();
-        this.stringCode = account.getEmployee() != null ? account.getEmployee().getCode() : null;
+        this.stringCode = account.getEmployee() == null ? null : account.getEmployee().getCode();
     }
 
     public Map<String, Object> getModel() {

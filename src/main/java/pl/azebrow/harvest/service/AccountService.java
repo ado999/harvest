@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.exeption.AccountNotFoundException;
-import pl.azebrow.harvest.exeption.EmailAlreadyTakenException;
+import pl.azebrow.harvest.exeption.EmailAlreadyExistsException;
 import pl.azebrow.harvest.exeption.RoleNotFoundException;
 import pl.azebrow.harvest.mail.MailModel;
 import pl.azebrow.harvest.model.Account;
@@ -38,7 +38,6 @@ public class AccountService {
         passwordRecoveryService.initComponent(this);
     }
 
-    //todo update to new EmployeeRequest
     public void createEmployee(EmployeeRequest request) {
         validateEmail(request.getEmail());
         Role accountRole = findRole(RoleEnum.USER);
@@ -64,7 +63,7 @@ public class AccountService {
     }
 
     public void updateAccount(Long id, AccountUpdateRequest updateRequest) {
-        Account account = findUserById(id);
+        Account account = findAccountById(id);
         account.setFirstName(updateRequest.getFirstName());
         account.setLastName(updateRequest.getFirstName());
         account.setEnabled(updateRequest.getEnabled());
@@ -72,7 +71,7 @@ public class AccountService {
     }
 
     public void updateAccountEmail(Long id, AccountEmailUpdateRequest updateRequest) {
-        Account account = findUserById(id);
+        Account account = findAccountById(id);
         if (account.getEmail().equals(updateRequest.getEmail())) {
             return;
         }
@@ -96,16 +95,16 @@ public class AccountService {
     }
 
     public void setAccountStatus(String email, AccountStatus status) {
-        setAccountStatus(getAccountByEmail(email), status);
+        setAccountStatus(findAccountByEmail(email), status);
     }
 
-    public Account findUserById(Long id) {
+    public Account findAccountById(Long id) {
         return accountRepository
                 .findById(id)
                 .orElseThrow(() -> new AccountNotFoundException(String.format("User with id \"%d\" not found", id)));
     }
 
-    public Account getAccountByEmail(String email) {
+    public Account findAccountByEmail(String email) {
         return accountRepository
                 .findByEmail(email)
                 .orElseThrow(() -> new AccountNotFoundException(String.format("User with email \"%s\" not found", email)));
@@ -113,7 +112,7 @@ public class AccountService {
 
     private void validateEmail(String email) {
         if (accountRepository.existsByEmail(email)) {
-            throw new EmailAlreadyTakenException(String.format("Email \"%s\" already exists!", email));
+            throw new EmailAlreadyExistsException(String.format("Email \"%s\" already exists!", email));
         }
     }
 

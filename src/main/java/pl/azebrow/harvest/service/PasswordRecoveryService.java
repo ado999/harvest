@@ -40,7 +40,7 @@ public class PasswordRecoveryService {
     }
 
     public void createPasswordRecoveryToken(String email, MailModel.Type type) {
-        Account account = accountService.getAccountByEmail(email);
+        Account account = accountService.findAccountByEmail(email);
         MailModel model = new MailModel(account, type);
         createPasswordRecoveryToken(model);
     }

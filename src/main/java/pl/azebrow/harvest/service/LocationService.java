@@ -28,7 +28,7 @@ public class LocationService {
     }
 
     public void createLocation(LocationRequest locationRequest) {
-        Account account = accountService.findUserById(locationRequest.getOwner());
+        Account account = accountService.findAccountById(locationRequest.getOwner());
         Location location = Location.builder()
                 .owner(account)
                 .description(locationRequest.getDescription())
