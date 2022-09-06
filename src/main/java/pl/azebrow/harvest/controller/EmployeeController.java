@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.request.EmployeeRequest;
@@ -16,6 +17,8 @@ import pl.azebrow.harvest.response.EmployeeResponse;
 import pl.azebrow.harvest.service.AccountService;
 import pl.azebrow.harvest.service.EmployeeService;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/employee")
 @Secured({RoleEnum.Constants.ADMIN, RoleEnum.Constants.STAFF})
 @RequiredArgsConstructor
+@Validated
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -63,7 +67,7 @@ public class EmployeeController {
 
     @GetMapping("/id/{id}")
     public EmployeeResponse getEmployeeById(
-            @PathVariable Long id) {
+            @Min(1) @PathVariable Long id) {
         var employee = employeeService.getEmployeeById(id);
         return mapper.map(employee, EmployeeResponse.class);
     }
@@ -87,15 +91,15 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void createEmployeeAccount(
-            @RequestBody EmployeeRequest request) {
+            @Valid @RequestBody EmployeeRequest request) {
         accountService.createEmployee(request);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/id/{id}")
     public void updateEmployee(
-            @PathVariable Long id,
-            @RequestBody EmployeeUpdateRequest updateRequest
+            @Min(1) @PathVariable Long id,
+            @Valid @RequestBody EmployeeUpdateRequest updateRequest
     ) {
         employeeService.updateEmployee(id, updateRequest);
     }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.request.LocationRequest;
@@ -11,6 +12,8 @@ import pl.azebrow.harvest.request.LocationUpdateRequest;
 import pl.azebrow.harvest.response.LocationResponse;
 import pl.azebrow.harvest.service.LocationService;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/location")
 @Secured({RoleEnum.Constants.ADMIN, RoleEnum.Constants.STAFF})
 @RequiredArgsConstructor
+@Validated
 public class LocationController {
 
     private final LocationService locationService;
@@ -39,7 +43,7 @@ public class LocationController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void createLocation(
-            @RequestBody LocationRequest locationRequest
+            @Valid @RequestBody LocationRequest locationRequest
     ) {
         locationService.createLocation(locationRequest);
     }
@@ -47,8 +51,8 @@ public class LocationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
     public void updateLocation(
-            @PathVariable Long id,
-            @RequestBody LocationUpdateRequest updateRequest
+            @Min(1) @PathVariable Long id,
+            @Valid @RequestBody LocationUpdateRequest updateRequest
     ) {
         locationService.updateLocation(id, updateRequest);
     }

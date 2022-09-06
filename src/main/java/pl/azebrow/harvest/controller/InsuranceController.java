@@ -7,12 +7,15 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.request.InsuranceRequest;
 import pl.azebrow.harvest.response.InsuranceResponse;
 import pl.azebrow.harvest.service.InsuranceService;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/insurance")
 @Secured({RoleEnum.Constants.ADMIN, RoleEnum.Constants.STAFF})
 @RequiredArgsConstructor
+@Validated
 public class InsuranceController {
 
     private final InsuranceService insuranceService;
@@ -31,11 +35,11 @@ public class InsuranceController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "404", description = "No employee found with the given id")
     })
-    @GetMapping
+    @GetMapping("/employee/{id}")
     public Collection<InsuranceResponse> getEmployeePolicies(
-            @RequestParam Long employeeId
+            @Min(1) @PathVariable Long id
     ) {
-        var insuranceList = insuranceService.getEmployeePolicies(employeeId);
+        var insuranceList = insuranceService.getEmployeePolicies(id);
         return insuranceList
                 .stream()
                 .map(i -> mapper.map(i, InsuranceResponse.class))
@@ -50,7 +54,7 @@ public class InsuranceController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void addPolicy(
-            @RequestBody InsuranceRequest insuranceRequest
+            @Valid @RequestBody InsuranceRequest insuranceRequest
     ) {
         insuranceService.addPolicy(insuranceRequest);
     }
@@ -64,7 +68,7 @@ public class InsuranceController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deletePolicy(
-            @PathVariable Long id
+            @Min(1) @PathVariable Long id
     ) {
         insuranceService.removePolicy(id);
     }

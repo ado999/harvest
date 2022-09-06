@@ -4,12 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.request.PaymentRequest;
 import pl.azebrow.harvest.response.PaymentResponse;
 import pl.azebrow.harvest.service.PaymentService;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -17,6 +20,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/payment")
 @Secured({RoleEnum.Constants.STAFF, RoleEnum.Constants.ADMIN})
 @RequiredArgsConstructor
+@Validated
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -26,7 +30,7 @@ public class PaymentController {
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void createPayment(
-            @RequestBody PaymentRequest request
+            @Valid @RequestBody PaymentRequest request
     ) {
         paymentService.addPayment(request);
     }
@@ -34,15 +38,15 @@ public class PaymentController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updatePayment(
-            @PathVariable Long id,
-            @RequestBody PaymentRequest request
+            @Min(1) @PathVariable Long id,
+            @Valid @RequestBody PaymentRequest request
     ) {
         paymentService.updatePayment(request, id);
     }
 
     @GetMapping("/{id}")
     public PaymentResponse getPayment(
-            @PathVariable Long id
+            @Min(1) @PathVariable Long id
     ) {
         var payment = paymentService.getPaymentById(id);
         return mapper.map(payment, PaymentResponse.class);
@@ -50,7 +54,7 @@ public class PaymentController {
 
     @GetMapping("/employee/{id}")
     public Collection<PaymentResponse> getPaymentByEmployeeId(
-            @PathVariable Long id
+            @Min(1) @PathVariable Long id
     ) {
         var payment = paymentService.getPaymentsByEmployeeId(id);
         return payment

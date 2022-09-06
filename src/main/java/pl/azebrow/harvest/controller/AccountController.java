@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.request.AccountEmailUpdateRequest;
@@ -15,17 +16,21 @@ import pl.azebrow.harvest.request.AccountUpdateRequest;
 import pl.azebrow.harvest.response.AccountResponse;
 import pl.azebrow.harvest.service.AccountService;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+
 @RestController
 @RequestMapping("/api/v1/account")
 @Secured({RoleEnum.Constants.STAFF, RoleEnum.Constants.ADMIN})
 @RequiredArgsConstructor
+@Validated
 public class AccountController {
 
     private final AccountService accountService;
     private final ModelMapper mapper;
 
     @GetMapping("/{id}")
-    public AccountResponse getAccount(@PathVariable Long id) {
+    public AccountResponse getAccount(@Min(1) @PathVariable Long id) {
         var account = accountService.findAccountById(id);
         return mapper.map(account, AccountResponse.class);
     }
@@ -38,7 +43,7 @@ public class AccountController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void createStaffAccount(
-            @RequestBody AccountRequest request) {
+            @Valid @RequestBody AccountRequest request) {
         accountService.createStaffAccount(request);
     }
 
@@ -50,8 +55,8 @@ public class AccountController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
     public void updateAccount(
-            @PathVariable Long id,
-            @RequestBody AccountUpdateRequest updateRequest
+            @Min(1) @PathVariable Long id,
+            @Valid @RequestBody AccountUpdateRequest updateRequest
     ) {
         accountService.updateAccount(id, updateRequest);
     }
@@ -65,8 +70,8 @@ public class AccountController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/email/{id}")
     public void updateAccountEmail(
-            @PathVariable Long id,
-            @RequestBody AccountEmailUpdateRequest updateRequest
+            @Min(1) @PathVariable Long id,
+            @Valid @RequestBody AccountEmailUpdateRequest updateRequest
     ) {
         accountService.updateAccountEmail(id, updateRequest);
     }

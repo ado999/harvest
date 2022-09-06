@@ -6,16 +6,20 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.service.ReportService;
 import pl.azebrow.harvest.settlement.EmployeeSettlementResponse;
+
+import javax.validation.constraints.Min;
 
 
 @RestController
 @RequestMapping("/api/v1/report")
 @Secured({RoleEnum.Constants.STAFF, RoleEnum.Constants.ADMIN})
 @RequiredArgsConstructor
+@Validated
 public class ReportController {
 
     private final ReportService reportService;
@@ -24,7 +28,8 @@ public class ReportController {
 
     @GetMapping("/employee/{employeeId}")
     public EmployeeSettlementResponse getEmployeeSettlement(
-            @PathVariable Long employeeId,
+            @Min(1) @PathVariable Long employeeId,
+            //todo make it localdate and apply validation
             @RequestParam String from,
             @RequestParam String to
     ) {
@@ -35,7 +40,8 @@ public class ReportController {
     @GetMapping(value = "/employee/{employeeId}/report",
             produces = "application/vnd.ms-excel")
     public ResponseEntity<Resource> generateEmployeeSettlementReport(
-            @PathVariable Long employeeId,
+            @Min(1) @PathVariable Long employeeId,
+            //todo as above
             @RequestParam String from,
             @RequestParam String to
     ) {
@@ -48,6 +54,7 @@ public class ReportController {
     @GetMapping(value = "/locations/report",
             produces = "application/vnd.ms-excel")
     public ResponseEntity<Resource> generateLocationSettlementReport(
+            //todo as above
             @RequestParam String from,
             @RequestParam String to
     ) {

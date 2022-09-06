@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.request.JobTypeRequest;
@@ -12,6 +13,8 @@ import pl.azebrow.harvest.response.JobTypeResponse;
 import pl.azebrow.harvest.response.JobUnitResponse;
 import pl.azebrow.harvest.service.JobTypeService;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/job-type")
 @Secured({RoleEnum.Constants.ADMIN, RoleEnum.Constants.STAFF})
 @RequiredArgsConstructor
+@Validated
 public class JobTypeController {
 
     private final JobTypeService jobTypeService;
@@ -49,7 +53,7 @@ public class JobTypeController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void postJobType(
-            @RequestBody JobTypeRequest jobTypeRequest
+            @Valid @RequestBody JobTypeRequest jobTypeRequest
     ) {
         jobTypeService.addJobType(jobTypeRequest);
     }
@@ -58,8 +62,8 @@ public class JobTypeController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
     public void setDisabled(
-            @PathVariable Long id,
-            @RequestBody JobTypeUpdateRequest updateRequest
+            @Min(1) @PathVariable Long id,
+            @Valid @RequestBody JobTypeUpdateRequest updateRequest
     ) {
         jobTypeService.setDisabled(id, updateRequest);
     }

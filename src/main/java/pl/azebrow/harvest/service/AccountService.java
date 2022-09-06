@@ -20,6 +20,7 @@ import pl.azebrow.harvest.request.EmployeeRequest;
 import pl.azebrow.harvest.utils.EmployeeCodeGenerator;
 
 import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -46,6 +47,7 @@ public class AccountService {
                 .code(codeGenerator.generateCode(request.getLastName()))
                 .passportTaken(request.getPassportTaken())
                 .phoneNumber(request.getPhoneNumber())
+                .balance(BigDecimal.ZERO)
                 .build();
         account.setEmployee(employee);
         accountRepository.saveAndFlush(account);
