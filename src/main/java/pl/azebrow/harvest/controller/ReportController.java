@@ -13,6 +13,9 @@ import pl.azebrow.harvest.service.ReportService;
 import pl.azebrow.harvest.settlement.EmployeeSettlementResponse;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import java.time.LocalDate;
 
 
 @RestController
@@ -29,11 +32,10 @@ public class ReportController {
     @GetMapping("/employee/{employeeId}")
     public EmployeeSettlementResponse getEmployeeSettlement(
             @Min(1) @PathVariable Long employeeId,
-            //todo make it localdate and apply validation
-            @RequestParam String from,
-            @RequestParam String to
+            @NotNull @Past @RequestParam LocalDate dateFrom,
+            @NotNull @RequestParam LocalDate dateTo
     ) {
-        var response = reportService.getEmployeeSettlement(employeeId, from, to);
+        var response = reportService.getEmployeeSettlement(employeeId, dateFrom, dateTo);
         return mapper.map(response, EmployeeSettlementResponse.class);
     }
 
@@ -41,11 +43,10 @@ public class ReportController {
             produces = "application/vnd.ms-excel")
     public ResponseEntity<Resource> generateEmployeeSettlementReport(
             @Min(1) @PathVariable Long employeeId,
-            //todo as above
-            @RequestParam String from,
-            @RequestParam String to
+            @NotNull @Past @RequestParam LocalDate dateFrom,
+            @NotNull @RequestParam LocalDate dateTo
     ) {
-        var data = reportService.generateEmployeeSettlementReport(employeeId, from, to);
+        var data = reportService.generateEmployeeSettlementReport(employeeId, dateFrom, dateTo);
         var resource = new ByteArrayResource(data);
         return ResponseEntity.ok()
                 .body(resource);
@@ -54,11 +55,10 @@ public class ReportController {
     @GetMapping(value = "/locations/report",
             produces = "application/vnd.ms-excel")
     public ResponseEntity<Resource> generateLocationSettlementReport(
-            //todo as above
-            @RequestParam String from,
-            @RequestParam String to
+            @NotNull @Past @RequestParam LocalDate dateFrom,
+            @NotNull @RequestParam LocalDate dateTo
     ) {
-        var data = reportService.generateLocationSettlementReport(from, to);
+        var data = reportService.generateLocationSettlementReport(dateFrom, dateTo);
         var resource = new ByteArrayResource(data);
         return ResponseEntity.ok()
                 .body(resource);

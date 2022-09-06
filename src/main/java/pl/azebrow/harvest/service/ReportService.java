@@ -23,37 +23,36 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReportService {
 
+    private static final String EMPLOYEE_REPORT_TEMPLATE_PATH = "templates/employee_report_template.xls";
+    private static final String LOCATION_REPORT_TEMPLATE_PATH = "templates/location_report_template.xls";
     private final EmployeeService employeeService;
     private final JobService jobService;
     private final PaymentService paymentService;
-    private final LocationService locationService;
 
     private final JxlsUtils jxlsUtils;
 
     public byte[] generateEmployeeSettlementReport(Long employeeId,
-                                                   String from,
-                                                   String to) {
+                                                   LocalDate from,
+                                                   LocalDate to) {
         var settlement = getEmployeeSettlement(employeeId, from, to);
         var datasource = new EmployeeSettlementDatasource(settlement);
-        return jxlsUtils.generateReport("templates/employee_report_template.xls", datasource);
+        return jxlsUtils.generateReport(EMPLOYEE_REPORT_TEMPLATE_PATH, datasource);
     }
 
-    public byte[] generateLocationSettlementReport(String from, String to) {
-        var settlement = getLocationsSettlement(from, to);
+    public byte[] generateLocationSettlementReport(LocalDate dateFrom, LocalDate dateTo) {
+        var settlement = getLocationsSettlement(dateFrom, dateTo);
         var datasource = new LocationsSettlementDatasource(settlement);
-        return jxlsUtils.generateReport("templates/location_report_template.xls", datasource);
+        return jxlsUtils.generateReport(LOCATION_REPORT_TEMPLATE_PATH, datasource);
     }
 
     public EmployeeSettlement getEmployeeSettlement(Long employeeId,
-                                                    String from,
-                                                    String to) {
-        var dateFrom = LocalDate.parse(from);
-        var dateTo = LocalDate.parse(to);
+                                                    LocalDate dateFrom,
+                                                    LocalDate dateTo) {
         var employee = employeeService.getEmployeeById(employeeId); // check for employee existence
         var specs = new SpecificationBuilder()
-                .with("dateFrom", from)
-                .with("dateTo", to)
-                .with("employee", employeeId);
+                .with(SpecificationBuilder.DATE_FROM, dateFrom.toString())
+                .with(SpecificationBuilder.DATE_TO, dateTo.toString())
+                .with(SpecificationBuilder.EMPLOYEE, employeeId);
         var jobs = jobService.findJobs(specs.build(Job.class));
         var payments = paymentService.findPayments(specs.build(Payment.class));
         var jobsAmount = jobs.stream()
@@ -76,12 +75,10 @@ public class ReportService {
                 .build();
     }
 
-    private LocationsSettlement getLocationsSettlement(String from, String to) {
-        var dateFrom = LocalDate.parse(from);
-        var dateTo = LocalDate.parse(to);
+    private LocationsSettlement getLocationsSettlement(LocalDate dateFrom, LocalDate dateTo) {
         var specs = new SpecificationBuilder()
-                .with("dateFrom", from)
-                .with("dateTo", to);
+                .with(SpecificationBuilder.DATE_FROM, dateFrom.toString())
+                .with(SpecificationBuilder.DATE_TO, dateTo.toString());
         var jobs = jobService.findJobs(specs.build(Job.class));
         var map = jobs.stream()
                 .collect(Collectors.groupingBy(Job::getLocation));

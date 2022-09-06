@@ -7,6 +7,10 @@ import java.util.List;
 
 public class SpecificationBuilder {
 
+    public static final String EMPLOYEE = "employee";
+    public static final String DATE_FROM = "dateFrom";
+    public static final String DATE_TO = "dateTo";
+
     private final List<SearchCriteria> criteriaList;
     private final SpecificationFactory specFactory;
 
