@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.request.InsuranceRequest;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/insurance")
 @Secured({RoleEnum.Constants.ADMIN, RoleEnum.Constants.STAFF})
 @RequiredArgsConstructor
+@Validated
 public class InsuranceController {
 
     private final InsuranceService insuranceService;

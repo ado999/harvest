@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.request.EmployeeRequest;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/employee")
 @Secured({RoleEnum.Constants.ADMIN, RoleEnum.Constants.STAFF})
 @RequiredArgsConstructor
+@Validated
 public class EmployeeController {
 
     private final EmployeeService employeeService;

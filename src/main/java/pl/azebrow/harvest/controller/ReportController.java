@@ -6,6 +6,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.service.ReportService;
@@ -16,6 +17,7 @@ import pl.azebrow.harvest.settlement.EmployeeSettlementResponse;
 @RequestMapping("/api/v1/report")
 @Secured({RoleEnum.Constants.STAFF, RoleEnum.Constants.ADMIN})
 @RequiredArgsConstructor
+@Validated
 public class ReportController {
 
     private final ReportService reportService;

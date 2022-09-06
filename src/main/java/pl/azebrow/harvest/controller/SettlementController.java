@@ -3,6 +3,7 @@ package pl.azebrow.harvest.controller;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/settlement")
 @Secured({RoleEnum.Constants.STAFF, RoleEnum.Constants.ADMIN})
 @RequiredArgsConstructor
+@Validated
 public class SettlementController {
 
     private final SettlementService settlementService;

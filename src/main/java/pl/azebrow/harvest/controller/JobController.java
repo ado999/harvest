@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.constant.RoleEnum;
 import pl.azebrow.harvest.model.Job;
@@ -26,6 +27,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/job")
 @Secured({RoleEnum.Constants.ADMIN, RoleEnum.Constants.STAFF})
 @RequiredArgsConstructor
+@Validated
 public class JobController {
 
     private final JobService jobService;
