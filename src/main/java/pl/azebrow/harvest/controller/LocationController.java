@@ -14,6 +14,7 @@ import pl.azebrow.harvest.service.LocationService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -51,7 +52,7 @@ public class LocationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
     public void updateLocation(
-            @Min(1) @PathVariable Long id,
+            @NotNull @Min(1) @PathVariable Long id,
             @Valid @RequestBody LocationUpdateRequest updateRequest
     ) {
         locationService.updateLocation(id, updateRequest);

@@ -19,6 +19,7 @@ import pl.azebrow.harvest.service.EmployeeService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -67,7 +68,7 @@ public class EmployeeController {
 
     @GetMapping("/id/{id}")
     public EmployeeResponse getEmployeeById(
-            @Min(1) @PathVariable Long id) {
+            @NotNull @Min(1) @PathVariable Long id) {
         var employee = employeeService.getEmployeeById(id);
         return mapper.map(employee, EmployeeResponse.class);
     }
@@ -98,7 +99,7 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/id/{id}")
     public void updateEmployee(
-            @Min(1) @PathVariable Long id,
+            @NotNull @Min(1) @PathVariable Long id,
             @Valid @RequestBody EmployeeUpdateRequest updateRequest
     ) {
         employeeService.updateEmployee(id, updateRequest);

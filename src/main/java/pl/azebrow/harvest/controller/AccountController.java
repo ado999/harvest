@@ -18,6 +18,7 @@ import pl.azebrow.harvest.service.AccountService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/api/v1/account")
@@ -30,7 +31,7 @@ public class AccountController {
     private final ModelMapper mapper;
 
     @GetMapping("/{id}")
-    public AccountResponse getAccount(@Min(1) @PathVariable Long id) {
+    public AccountResponse getAccount(@NotNull @Min(1) @PathVariable Long id) {
         var account = accountService.findAccountById(id);
         return mapper.map(account, AccountResponse.class);
     }
@@ -55,7 +56,7 @@ public class AccountController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
     public void updateAccount(
-            @Min(1) @PathVariable Long id,
+            @NotNull @Min(1) @PathVariable Long id,
             @Valid @RequestBody AccountUpdateRequest updateRequest
     ) {
         accountService.updateAccount(id, updateRequest);
@@ -70,7 +71,7 @@ public class AccountController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/email/{id}")
     public void updateAccountEmail(
-            @Min(1) @PathVariable Long id,
+            @NotNull @Min(1) @PathVariable Long id,
             @Valid @RequestBody AccountEmailUpdateRequest updateRequest
     ) {
         accountService.updateAccountEmail(id, updateRequest);

@@ -23,6 +23,7 @@ import pl.azebrow.harvest.specification.SpecificationBuilder;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class JobController {
     })
     @GetMapping("/{id}")
     public JobResponse getJobById(
-            @Min(1) @PathVariable Long id
+            @NotNull @Min(1) @PathVariable Long id
     ) {
         var job = jobService.getJobById(id);
         return mapper.map(job, JobResponse.class);
@@ -81,7 +82,7 @@ public class JobController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
     public void putJob(
-            @Min(1) @PathVariable Long id,
+            @NotNull @Min(1) @PathVariable Long id,
             @Valid @RequestBody JobRequest jobRequest
     ) {
         jobService.updateJob(jobRequest, id);

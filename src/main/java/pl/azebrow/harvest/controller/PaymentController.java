@@ -13,6 +13,7 @@ import pl.azebrow.harvest.service.PaymentService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ public class PaymentController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updatePayment(
-            @Min(1) @PathVariable Long id,
+            @NotNull @Min(1) @PathVariable Long id,
             @Valid @RequestBody PaymentRequest request
     ) {
         paymentService.updatePayment(request, id);
@@ -46,7 +47,7 @@ public class PaymentController {
 
     @GetMapping("/{id}")
     public PaymentResponse getPayment(
-            @Min(1) @PathVariable Long id
+            @NotNull @Min(1) @PathVariable Long id
     ) {
         var payment = paymentService.getPaymentById(id);
         return mapper.map(payment, PaymentResponse.class);
@@ -54,7 +55,7 @@ public class PaymentController {
 
     @GetMapping("/employee/{id}")
     public Collection<PaymentResponse> getPaymentByEmployeeId(
-            @Min(1) @PathVariable Long id
+            @NotNull @Min(1) @PathVariable Long id
     ) {
         var payment = paymentService.getPaymentsByEmployeeId(id);
         return payment

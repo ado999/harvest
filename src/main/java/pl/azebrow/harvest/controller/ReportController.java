@@ -31,7 +31,7 @@ public class ReportController {
 
     @GetMapping("/employee/{employeeId}")
     public EmployeeSettlementResponse getEmployeeSettlement(
-            @Min(1) @PathVariable Long employeeId,
+            @NotNull @Min(1) @PathVariable Long employeeId,
             @NotNull @Past @RequestParam LocalDate dateFrom,
             @NotNull @RequestParam LocalDate dateTo
     ) {
@@ -42,7 +42,7 @@ public class ReportController {
     @GetMapping(value = "/employee/{employeeId}/report",
             produces = "application/vnd.ms-excel")
     public ResponseEntity<Resource> generateEmployeeSettlementReport(
-            @Min(1) @PathVariable Long employeeId,
+            @NotNull @Min(1) @PathVariable Long employeeId,
             @NotNull @Past @RequestParam LocalDate dateFrom,
             @NotNull @RequestParam LocalDate dateTo
     ) {

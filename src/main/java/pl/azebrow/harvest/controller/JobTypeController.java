@@ -15,6 +15,7 @@ import pl.azebrow.harvest.service.JobTypeService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -62,7 +63,7 @@ public class JobTypeController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
     public void setDisabled(
-            @Min(1) @PathVariable Long id,
+            @NotNull @Min(1) @PathVariable Long id,
             @Valid @RequestBody JobTypeUpdateRequest updateRequest
     ) {
         jobTypeService.setDisabled(id, updateRequest);

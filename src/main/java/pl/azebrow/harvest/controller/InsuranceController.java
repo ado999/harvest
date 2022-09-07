@@ -16,6 +16,7 @@ import pl.azebrow.harvest.service.InsuranceService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,7 @@ public class InsuranceController {
     })
     @GetMapping("/employee/{id}")
     public Collection<InsuranceResponse> getEmployeePolicies(
-            @Min(1) @PathVariable Long id
+            @NotNull @Min(1) @PathVariable Long id
     ) {
         var insuranceList = insuranceService.getEmployeePolicies(id);
         return insuranceList
@@ -68,7 +69,7 @@ public class InsuranceController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deletePolicy(
-            @Min(1) @PathVariable Long id
+            @NotNull @Min(1) @PathVariable Long id
     ) {
         insuranceService.removePolicy(id);
     }
