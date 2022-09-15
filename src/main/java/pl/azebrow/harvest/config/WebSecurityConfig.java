@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
+@EnableGlobalMethodSecurity(securedEnabled = true, proxyTargetClass = true)
 @RequiredArgsConstructor
 @EnableJpaAuditing
 public class WebSecurityConfig {

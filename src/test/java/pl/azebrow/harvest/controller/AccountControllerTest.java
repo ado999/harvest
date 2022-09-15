@@ -2,21 +2,24 @@ package pl.azebrow.harvest.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pl.azebrow.harvest.model.Account;
+import pl.azebrow.harvest.model.AccountStatus;
 import pl.azebrow.harvest.request.AccountEmailUpdateRequest;
 import pl.azebrow.harvest.request.AccountRequest;
 import pl.azebrow.harvest.request.AccountUpdateRequest;
 import pl.azebrow.harvest.service.AccountService;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -26,37 +29,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AccountController.class)
 class AccountControllerTest {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    private final Account sampleAccount = Account.builder()
-            .id(1L)
-            .build();
 
     @Autowired
     MockMvc mockMvc;
 
-    @MockBean()
+    @MockBean
     AccountService accountService;
 
-    @MockBean
+    @SpyBean
     ModelMapper mapper;
 
-
-    @BeforeEach
-    void setUp() {
-
-    }
+    private final Account sampleAccount = Account.builder()
+            .id(1L).firstName("First").lastName("Last").email("e@ma.il").password("pass").enabled(true)
+            .status(AccountStatus.EMAIL_CONFIRMED).employee(null).roles(List.of()).build();
 
     @Test
     @WithMockUser(roles = "STAFF")
     void getAccount_with_valid_param_should_return_ok() throws Exception {
-        when(accountService.findAccountById(anyLong())).thenReturn(sampleAccount);
+        when(accountService.findAccountById(any())).thenReturn(sampleAccount);
 
         mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/v1/account/1")
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(accountService, times(1)).findAccountById(anyLong());
+
     }
 
     @Test
@@ -161,7 +158,7 @@ class AccountControllerTest {
 
     private String asJson(Object o) {
         try {
-            return objectMapper.writeValueAsString(o);
+            return new ObjectMapper().writeValueAsString(o);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
