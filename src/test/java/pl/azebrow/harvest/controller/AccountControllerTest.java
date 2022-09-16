@@ -2,6 +2,7 @@ package pl.azebrow.harvest.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import pl.azebrow.harvest.model.AccountStatus;
 import pl.azebrow.harvest.request.AccountEmailUpdateRequest;
 import pl.azebrow.harvest.request.AccountRequest;
 import pl.azebrow.harvest.request.AccountUpdateRequest;
+import pl.azebrow.harvest.service.AccountBuilder;
 import pl.azebrow.harvest.service.AccountService;
 
 import java.util.List;
@@ -39,9 +41,12 @@ class AccountControllerTest {
     @SpyBean
     ModelMapper mapper;
 
-    private final Account sampleAccount = Account.builder()
-            .id(1L).firstName("First").lastName("Last").email("e@ma.il").password("pass").enabled(true)
-            .status(AccountStatus.EMAIL_CONFIRMED).employee(null).roles(List.of()).build();
+    private Account sampleAccount;
+
+    @BeforeEach
+    void setup(){
+        sampleAccount = AccountBuilder.account().setId(123L).build();
+    }
 
     @Test
     @WithMockUser(roles = "STAFF")

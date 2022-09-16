@@ -39,7 +39,7 @@ class AccountServiceTest {
     AccountService accountService;
 
     @BeforeEach
-    void setUp() {
+    void init() {
         MockitoAnnotations.openMocks(this);
     }
 

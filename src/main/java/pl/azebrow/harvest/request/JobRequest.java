@@ -1,5 +1,6 @@
 package pl.azebrow.harvest.request;
 
+import lombok.Data;
 import lombok.Getter;
 
 import javax.validation.constraints.Min;
@@ -7,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
-@Getter
+@Data
 public class JobRequest {
 
     @NotNull

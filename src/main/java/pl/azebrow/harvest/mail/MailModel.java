@@ -11,7 +11,6 @@ import java.util.Map;
 @Data
 public class MailModel {
     private Account account;
-
     private Type mailType;
     private String to;
     private String name;

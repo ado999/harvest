@@ -18,30 +18,33 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class EmployeeCodeGeneratorTest {
 
-    EmployeeRepository employeeRepository;
+    EmployeeCodeGenerator codeGenerator;
 
     List<String> names = List.of("Abcd", "abcd", "ABCD", "Abc", "Ab", "A", "a", "");
-    List<String> validPrefixes = List.of("ABC", "ABC", "ABC", "ABC", "ABX", "AXX", "AXX", "XXX");
 
     @BeforeEach
-    void init(@Mock EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
+    void setup(@Mock EmployeeRepository employeeRepository) {
+        codeGenerator = new EmployeeCodeGenerator(employeeRepository);
         when(employeeRepository.existsByCode(Mockito.anyString())).thenReturn(false);
     }
 
     @Test
-    void shouldGenerateValidCode() {
-        var codeGenerator = new EmployeeCodeGenerator(employeeRepository);
+    void codeMatchesPattern() {
         var results = names.stream()
                 .map(codeGenerator::generateCode)
                 .toList();
-        var prefixes = results.stream()
-                .map(s -> s.substring(0, 3))
-                .toList();
-        assertLinesMatch(validPrefixes, prefixes);
         for (String s : results) {
             assertThat(s, matchesPattern("[A-Z]{3}\\d{5}"));
         }
+    }
 
+    @Test
+    void generatesValidPrefix(){
+        List<String> validPrefixes = List.of("ABC", "ABC", "ABC", "ABC", "ABX", "AXX", "AXX", "XXX");
+        var prefixes = names.stream()
+                .map(codeGenerator::generateCode)
+                .map(s -> s.substring(0, 3))
+                .toList();
+        assertLinesMatch(validPrefixes, prefixes);
     }
 }

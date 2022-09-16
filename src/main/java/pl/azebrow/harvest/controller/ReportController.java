@@ -16,6 +16,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
+import java.util.function.Supplier;
 
 
 @RestController
@@ -46,10 +47,7 @@ public class ReportController {
             @NotNull @Past @RequestParam LocalDate dateFrom,
             @NotNull @RequestParam LocalDate dateTo
     ) {
-        var data = reportService.generateEmployeeSettlementReport(employeeId, dateFrom, dateTo);
-        var resource = new ByteArrayResource(data);
-        return ResponseEntity.ok()
-                .body(resource);
+        return prepareResponseReport(() -> reportService.generateEmployeeSettlementReport(employeeId, dateFrom, dateTo));
     }
 
     @GetMapping(value = "/locations/report",
@@ -58,10 +56,12 @@ public class ReportController {
             @NotNull @Past @RequestParam LocalDate dateFrom,
             @NotNull @RequestParam LocalDate dateTo
     ) {
-        var data = reportService.generateLocationSettlementReport(dateFrom, dateTo);
-        var resource = new ByteArrayResource(data);
-        return ResponseEntity.ok()
-                .body(resource);
+        return prepareResponseReport(() -> reportService.generateLocationSettlementReport(dateFrom, dateTo));
+    }
+
+    private ResponseEntity<Resource> prepareResponseReport(Supplier<byte[]> supplier){
+        var resource = new ByteArrayResource(supplier.get());
+        return ResponseEntity.ok(resource);
     }
 
 }
