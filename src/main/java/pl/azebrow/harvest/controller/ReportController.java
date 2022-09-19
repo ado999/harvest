@@ -33,7 +33,7 @@ public class ReportController {
     @GetMapping("/employee/{employeeId}")
     public EmployeeSettlementResponse getEmployeeSettlement(
             @NotNull @Min(1) @PathVariable Long employeeId,
-            @NotNull @Past @RequestParam LocalDate dateFrom,
+            @NotNull @RequestParam LocalDate dateFrom,
             @NotNull @RequestParam LocalDate dateTo
     ) {
         var response = reportService.getEmployeeSettlement(employeeId, dateFrom, dateTo);

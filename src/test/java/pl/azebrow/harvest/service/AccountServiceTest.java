@@ -19,7 +19,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class AccountServiceTest {
 
@@ -72,9 +73,9 @@ class AccountServiceTest {
 
         accountService.createEmployee(request);
 
-        verify(accountRepository, times(1)).existsByEmail(request.getEmail());
-        verify(roleRepository, times(1)).findByName(RoleEnum.USER.getName());
-        verify(codeGenerator, times(1)).generateCode(request.getLastName());
+        verify(accountRepository).existsByEmail(request.getEmail());
+        verify(roleRepository).findByName(RoleEnum.USER.getName());
+        verify(codeGenerator).generateCode(request.getLastName());
     }
 
 }
