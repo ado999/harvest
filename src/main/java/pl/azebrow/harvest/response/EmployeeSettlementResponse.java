@@ -7,9 +7,9 @@ import java.time.LocalDateTime;
 
 @Data
 public class EmployeeSettlementResponse {
-    private Long employeeId;
-    private Long locationId;
-    private Long accountId;
+    private EmployeeResponse employee;
+    private LocationResponse location;
+    private AccountResponse account;
     private BigDecimal totalAmount;
     private BigDecimal balance;
     private LocalDateTime date;
