@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 @Data
 public class PaymentResponse {
     private Long id;
-    private Long employeeId;
-    private Long payerId;
+    private EmployeeResponse employee;
+    private AccountResponse payer;
     private LocalDateTime createdDate;
     private BigDecimal amount;
 }
