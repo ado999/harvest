@@ -14,14 +14,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pl.azebrow.harvest.model.Account;
-import pl.azebrow.harvest.model.AccountStatus;
 import pl.azebrow.harvest.request.AccountEmailUpdateRequest;
 import pl.azebrow.harvest.request.AccountRequest;
 import pl.azebrow.harvest.request.AccountUpdateRequest;
 import pl.azebrow.harvest.service.AccountBuilder;
 import pl.azebrow.harvest.service.AccountService;
-
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 public class EmailService {
 
     private final static String QR_CODE_CONTENT_ID = "qr-code";
-    private final static String MIME_TYPE = "image/png";
+    private final static String IMAGE_PNG_MIME_TYPE = "image/png";
 
     private final static String PWD_RECOVERY_TEMPLATE = "recovery.ftl";
     private final static String PWD_CREATION_TEMPLATE = "creation.ftl";
@@ -90,8 +90,10 @@ public class EmailService {
             helper.setTo(mailModel.getTo());
             helper.setSubject(mailModel.getSubject());
             helper.setText(html, true);
-            byte[] qrBytes = qrGenerator.generate(mailModel.getStringCode());
-            helper.addInline(QR_CODE_CONTENT_ID, new ByteArrayDataSource(qrBytes, MIME_TYPE));
+            if (mailModel.getStringCode() != null) {
+                byte[] qrBytes = qrGenerator.generate(mailModel.getStringCode());
+                helper.addInline(QR_CODE_CONTENT_ID, new ByteArrayDataSource(qrBytes, IMAGE_PNG_MIME_TYPE));
+            }
         } catch (MessagingException e) {
             e.printStackTrace();
             accountService.setAccountStatus(mailModel.getTo(), AccountStatus.ERROR_SENDING_EMAIL);

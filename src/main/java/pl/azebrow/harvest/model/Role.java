@@ -26,6 +26,11 @@ public class Role implements GrantedAuthority {
         return name;
     }
 
+    @Override
+    public String toString() {
+        return String.format("Role(id=%s, name=%s)", id, name);
+    }
+
     //test only
     public Role(Long id, String name) {
         this.id = id;

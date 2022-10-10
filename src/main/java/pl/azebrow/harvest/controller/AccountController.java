@@ -38,7 +38,7 @@ public class AccountController {
 
     @Operation(summary = "Create staff account")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Account created successfully"),
+            @ApiResponse(responseCode = "201", description = "Account created successfully"),
             @ApiResponse(responseCode = "409", description = "Email is being used")
     })
     @ResponseStatus(HttpStatus.CREATED)
