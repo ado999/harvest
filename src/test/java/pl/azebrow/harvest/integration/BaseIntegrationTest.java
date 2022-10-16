@@ -1,7 +1,5 @@
 package pl.azebrow.harvest.integration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,6 +11,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -21,6 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @ContextConfiguration(initializers = BaseIntegrationTest.TestEnvInitializers.class)
 @AutoConfigureMockMvc
+@Transactional
 @DirtiesContext
 public class BaseIntegrationTest {
 
@@ -33,13 +33,7 @@ public class BaseIntegrationTest {
     @Container
     private static PostgreSQLContainer<?> postgresDB = new PostgreSQLContainer<>("postgres:14.1").withDatabaseName("harvest").withUsername("harvest").withPassword("harvest")/*.withInitScript("init.sql")*/;
 
-    public String asJson(Object o) {
-        try {
-            return new ObjectMapper().writeValueAsString(o);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    protected JsonUtils jsonUtils = new JsonUtils();
 
     static class TestEnvInitializers implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 

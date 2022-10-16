@@ -67,7 +67,7 @@ public class AccountService {
     public void updateAccount(Long id, AccountUpdateRequest updateRequest) {
         Account account = findAccountById(id);
         account.setFirstName(updateRequest.getFirstName());
-        account.setLastName(updateRequest.getFirstName());
+        account.setLastName(updateRequest.getLastName());
         account.setEnabled(updateRequest.getEnabled());
         accountRepository.save(account);
     }

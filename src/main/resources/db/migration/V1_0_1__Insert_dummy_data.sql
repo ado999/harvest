@@ -17,9 +17,9 @@ insert into account
 	(5, 5, 'Jennilee', 'Tofanini', 'jtofanini4@angelfire.com', 'K8dl4sAWBfa3', true),
 	(6, 6, 'Lenka', 'Edge', 'ledge5@umn.edu', 'irqcPsro', true),
 	(7, 7, 'Jobina', 'Wyon', 'jwyon6@umn.edu', 'pdmiOJ', true),
-	(8, 8, 'Broderick', 'Sandle', 'bsandle7@oakley.com', 'PCMvmvIqE5ZR', true),
-	(9, 9, 'Hortense', 'Yonnie', 'hyonnie8@tiny.cc', 'pFA85OU', true),
-	(10, 10, 'Sherrie', 'Tinton', 'stinton9@multiply.com', 'ZCuzNmv1Jv', true);
+	(8, 8, 'Broderick', 'Sandle', 'bsandle7@oakley.com', 'PCMvmvIqE5ZR', false),
+	(9, 9, 'Hortense', 'Yonnie', 'hyonnie8@tiny.cc', 'pFA85OU', false),
+	(10, 10, 'Sherrie', 'Tinton', 'stinton9@multiply.com', 'ZCuzNmv1Jv', false);
 
 INSERT INTO account_roles
 	(user_id, role_id)
