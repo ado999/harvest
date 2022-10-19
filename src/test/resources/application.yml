@@ -1,0 +1,21 @@
+spring:
+  config:
+    import: secrets.yml
+  datasource:
+    url: jdbc:tc:postgresql:14.1:////harvest
+    username: harvest
+    password: harvest
+
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+#   username and password removed
+    port: 587
+    protocol: smtp
+    test-connection: false
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

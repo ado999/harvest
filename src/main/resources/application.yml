@@ -1,0 +1,26 @@
+spring:
+  config:
+    import: secrets.yml
+  datasource:
+    url: jdbc:postgresql://localhost:5432/harvest
+    username: harvest
+    password: harvest12345!
+  jpa:
+    hibernate:
+      ddl-auto: none
+  flyway:
+    baseline-on-migration: true
+
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    #    username and password removed
+    port: 587
+    protocol: smtp
+    test-connection: false
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
