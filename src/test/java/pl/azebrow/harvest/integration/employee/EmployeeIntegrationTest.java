@@ -4,18 +4,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import pl.azebrow.harvest.integration.BaseIntegrationTest;
 import pl.azebrow.harvest.repository.EmployeeRepository;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SqlGroup({
+        @Sql(scripts = "classpath:db/employee_it.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        @Sql(scripts = "classpath:db/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+})
 public class EmployeeIntegrationTest extends BaseIntegrationTest {
 
     private final static String EMPLOYEE_URL = "/api/v1/employee";
@@ -29,7 +33,7 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(get(EMPLOYEE_URL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(7)));
+                .andExpect(jsonPath("$", hasSize(3)));
     }
 
     @Test
@@ -39,7 +43,7 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
                         .param("showDisabled", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(10)));
+                .andExpect(jsonPath("$", hasSize(5)));
     }
 
     @Test
@@ -68,7 +72,7 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = "STAFF")
     public void shouldNotReturnEmployeeById() throws Exception {
-        mockMvc.perform(get(EMPLOYEE_URL + "/id/69420"))
+        mockMvc.perform(get(EMPLOYEE_URL + "/id/99999"))
                 .andExpect(status().isNotFound());
     }
 
@@ -77,8 +81,8 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
     public void shouldFindEmployeeByFirstName() throws Exception {
         mockMvc.perform(get(EMPLOYEE_URL + "/search/MARCI"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
-                .andDo(print());
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(1)));
     }
 
     @Test
@@ -86,8 +90,8 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
     public void shouldFindEmployeeByLastName() throws Exception {
         mockMvc.perform(get(EMPLOYEE_URL + "/search/smitherman"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
-                .andDo(print());
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(1)));
     }
 
     @Test
@@ -95,41 +99,41 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
     public void shouldFindEmployeeByEmail() throws Exception {
         mockMvc.perform(get(EMPLOYEE_URL + "/search/msmitherman1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
-                .andDo(print());
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(1)));
     }
 
     @Test
     @WithMockUser(roles = "STAFF")
     public void shouldFindEmployeeByCode() throws Exception {
-        mockMvc.perform(get(EMPLOYEE_URL + "/search/tin0"))
+        mockMvc.perform(get(EMPLOYEE_URL + "/search/tof5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
-                .andDo(print());
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(1)));
     }
 
     @Test
     @WithMockUser(roles = "STAFF")
     public void shouldCreateEmployee() throws Exception {
         var employeeRequest = new EmployeeRequestBuilder()
-                .firstName("NewEmployee")
                 .employeeRequest();
         mockMvc.perform(post(EMPLOYEE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(employeeRequest)))
                 .andExpect(status().isCreated());
-        assertEquals(11, employeeRepository.count());
+        assertEquals(6, employeeRepository.count());
     }
 
     @Test
     @WithMockUser(roles = "STAFF")
     public void shouldNotCreateEmployeeWithDuplicateEmail() throws Exception {
-        var employeeRequest = new EmployeeRequestBuilder().email("ledge5@umn.edu").employeeRequest();
+        var employeeRequest = new EmployeeRequestBuilder()
+                .email("jtofanini4@angelfire.com").employeeRequest();
         mockMvc.perform(post(EMPLOYEE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(employeeRequest)))
                 .andExpect(status().isConflict());
-        assertEquals(10, employeeRepository.count());
+        assertEquals(5, employeeRepository.count());
     }
 
     @Test

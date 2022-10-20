@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import pl.azebrow.harvest.integration.BaseIntegrationTest;
 import pl.azebrow.harvest.repository.AccountRepository;
 import pl.azebrow.harvest.response.AccountResponse;
@@ -13,6 +15,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SqlGroup({
+        @Sql(scripts = "classpath:db/account_it.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        @Sql(scripts = "classpath:db/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+})
 public class AccountIntegrationTest extends BaseIntegrationTest {
 
     private final static String ACCOUNT_URL = "/api/v1/account";

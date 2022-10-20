@@ -4,17 +4,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import pl.azebrow.harvest.integration.BaseIntegrationTest;
 import pl.azebrow.harvest.repository.EmployeeRepository;
 import pl.azebrow.harvest.repository.InsuranceRepository;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SqlGroup({
+        @Sql(scripts = "classpath:db/insurance_it.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        @Sql(scripts = "classpath:db/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+})
 public class InsuranceIntegrationTest extends BaseIntegrationTest {
 
     private final static String INSURANCE_URL = "/api/v1/insurance";
@@ -47,6 +52,7 @@ public class InsuranceIntegrationTest extends BaseIntegrationTest {
         var insurances = insuranceRepository.findAllByEmployee(employee);
         assertTrue(insurances.stream()
                 .anyMatch(i -> i.getValidFrom().equals(insuranceRequestBuilder.getValidFrom()) && i.getValidTo().equals(insuranceRequestBuilder.getValidTo())));
+        assertEquals(4, insurances.size());
     }
 
     @Test
@@ -54,14 +60,13 @@ public class InsuranceIntegrationTest extends BaseIntegrationTest {
     public void shouldDeletePolicy() throws Exception {
         mockMvc.perform(delete(INSURANCE_URL + "/1"))
                 .andExpect(status().isNoContent());
-        var deletedPolicy = insuranceRepository.findById(1L);
-        assertFalse(deletedPolicy.isPresent());
+        assertFalse(insuranceRepository.existsById(1L));
     }
 
     @Test
     @WithMockUser(roles = "STAFF")
     public void shouldNotFindPolicy() throws Exception {
-        mockMvc.perform(delete(INSURANCE_URL + "/69420"))
+        mockMvc.perform(delete(INSURANCE_URL + "/999999"))
                 .andExpect(status().isNotFound());
     }
 
