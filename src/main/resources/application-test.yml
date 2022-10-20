@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:14.1:////harvest
+    username: harvest
+    password: harvest

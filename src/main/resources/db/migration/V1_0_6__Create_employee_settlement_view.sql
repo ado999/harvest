@@ -1,4 +1,4 @@
- CREATE OR REPLACE VIEW employee_settlement AS
+CREATE OR REPLACE VIEW employee_settlement AS
     WITH jobs_payments AS (
 	    SELECT employee_id, location_id, account_id, total_amount, date
 	    FROM job

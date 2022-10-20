@@ -4,5 +4,5 @@ ALTER TABLE IF EXISTS employee
 ALTER TABLE IF EXISTS employee
     ADD COLUMN passport_taken boolean NOT NULL DEFAULT False;
 
-UPDATE employee
-    SET passport_taken = false;
+--UPDATE employee
+--    SET passport_taken = false;
