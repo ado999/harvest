@@ -17,7 +17,7 @@ INSERT INTO account_roles
 INSERT INTO location
 	(id, creation_date, description, account_id, disabled)
 	VALUES
-	(1, '2021-01-01 15:00:00', 'Location name', 1, false);
+	(1, '2021-01-01 15:00:00', 'Location name', 3, false);
 
 INSERT INTO job_type
 	(id, default_rate, title, unit, disabled)
