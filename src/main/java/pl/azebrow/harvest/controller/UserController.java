@@ -5,7 +5,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.azebrow.harvest.constant.RoleEnum;
+import pl.azebrow.harvest.enums.RoleEnum;
 
 @RestController
 @RequestMapping("/api/v1/user")

@@ -47,7 +47,6 @@ public class PasswordRecoveryTokenIntegrationTest extends BaseIntegrationTest {
     @Test
     public void shouldNotRecoverPassword_whenTokenExpired() throws Exception {
         var passwordChangeRequest = new PasswordChangeRequest();
-        passwordChangeRequest.setEmail("user1@test.qp");
         passwordChangeRequest.setPassword("PasswordStrong!");
         mockMvc.perform(post(RECOVERY_URL + "/token1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -62,7 +61,6 @@ public class PasswordRecoveryTokenIntegrationTest extends BaseIntegrationTest {
     @Test
     public void shouldRecoverPassword() throws Exception {
         var passwordChangeRequest = new PasswordChangeRequest();
-        passwordChangeRequest.setEmail("user2@test.qp");
         passwordChangeRequest.setPassword("PasswordStrong!");
         mockMvc.perform(post(RECOVERY_URL + "/token2")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -6,7 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.azebrow.harvest.exeption.EmployeeNotFoundException;
 import pl.azebrow.harvest.model.Employee;
 import pl.azebrow.harvest.repository.EmployeeRepository;
+import pl.azebrow.harvest.request.EmployeeRequest;
 import pl.azebrow.harvest.request.EmployeeUpdateRequest;
+import pl.azebrow.harvest.utils.EmployeeCodeGenerator;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -18,6 +20,19 @@ import java.util.stream.Collectors;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+
+    private final EmployeeCodeGenerator employeeCodeGenerator;
+
+    public Employee createEmployee(EmployeeRequest request) {
+        Employee employee = Employee.builder()
+                .code(employeeCodeGenerator.generateCode(request.getLastName()))
+                .passportTaken(request.getPassportTaken())
+                .phoneNumber(request.getPhoneNumber())
+                .balance(BigDecimal.ZERO)
+                .build();
+        employeeRepository.saveAndFlush(employee);
+        return employee;
+    }
 
     public void updateEmployee(Long id, EmployeeUpdateRequest updateRequest) {
         var employee = getEmployeeById(id);

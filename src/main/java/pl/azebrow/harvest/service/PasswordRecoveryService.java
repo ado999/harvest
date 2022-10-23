@@ -1,13 +1,10 @@
 package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.azebrow.harvest.exeption.InvalidTokenException;
-import pl.azebrow.harvest.mail.MailModel;
 import pl.azebrow.harvest.model.Account;
-import pl.azebrow.harvest.model.AccountStatus;
 import pl.azebrow.harvest.model.PasswordRecoveryToken;
 import pl.azebrow.harvest.repository.PasswordRecoveryTokenRepository;
 import pl.azebrow.harvest.request.PasswordChangeRequest;
@@ -15,6 +12,8 @@ import pl.azebrow.harvest.request.PasswordChangeRequest;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import static pl.azebrow.harvest.model.AccountStatus.EMAIL_CONFIRMED;
 
 @Service
 @Transactional
@@ -27,39 +26,29 @@ public class PasswordRecoveryService {
 
     private final PasswordRecoveryTokenRepository tokenRepository;
 
-    private final PasswordEncoder passwordEncoder;
-
     private final EmailService emailService;
-    private AccountService accountService = null;
+    private final PasswordService passwordService;
+    private final AccountStatusService accountStatusService;
 
-    public void initComponent(AccountService accountService) {
-        this.accountService = accountService;
-        emailService.initComponent(accountService);
+    public void createPasswordRecoveryToken(String email) {
+        var account = accountStatusService.findAccountByEmail(email);
+        account.ifPresent(a -> createPasswordRecoveryToken(a, false));
     }
 
-    public void createPasswordRecoveryToken(MailModel model) {
+    public void createPasswordRecoveryToken(Account account, boolean newlyCreatedAccount) {
+        removeOldTokens(account);
         var token = new PasswordRecoveryToken();
         var expiryDate = LocalDateTime.now(clock).plusMinutes(EXPIRATION_MINUTES);
-        token.setAccount(model.getAccount());
+        token.setAccount(account);
         token.setToken(UUID.randomUUID().toString());
         token.setExpiryDate(expiryDate);
         tokenRepository.save(token);
-
-        model.setToken(token.getToken());
-        emailService.sendEmail(model);
-    }
-
-    public void createPasswordRecoveryToken(String email, MailModel.Type type) {
-        var account = accountService.findAccountByEmail(email);
-        var model = new MailModel(account, type);
-        var oldTokens = tokenRepository.findAllByAccount(account);
-        oldTokens.forEach(tokenRepository::delete);
-        createPasswordRecoveryToken(model);
+        emailService.sendRecoveryEmail(token, newlyCreatedAccount);
     }
 
     @Transactional(noRollbackFor = InvalidTokenException.class)
     public void recoverPassword(String tokenString, PasswordChangeRequest request) {
-        PasswordRecoveryToken token = tokenRepository
+        var token = tokenRepository
                 .findByToken(tokenString)
                 .orElseThrow(
                         () -> new InvalidTokenException("Token not found!"));
@@ -67,14 +56,14 @@ public class PasswordRecoveryService {
             tokenRepository.delete(token);
             throw new InvalidTokenException("Token expired");
         }
-        Account account = token.getAccount();
-        if (!account.getEmail().equals(request.getEmail())) {
-            tokenRepository.delete(token);
-            throw new InvalidTokenException("Email not valid!");
-        }
-        String password = passwordEncoder.encode(request.getPassword());
-        accountService.setAccountPassword(account, password);
-        accountService.setAccountStatus(account, AccountStatus.EMAIL_CONFIRMED);
+        var account = token.getAccount();
+        passwordService.setPassword(account, request.getPassword());
+        accountStatusService.setStatus(account, EMAIL_CONFIRMED);
         tokenRepository.delete(token);
+    }
+
+    private void removeOldTokens(Account account) {
+        var oldTokens = tokenRepository.findAllByAccount(account);
+        oldTokens.forEach(tokenRepository::delete);
     }
 }

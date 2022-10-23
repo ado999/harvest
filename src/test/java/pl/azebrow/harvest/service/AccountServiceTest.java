@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
-import pl.azebrow.harvest.constant.RoleEnum;
+import pl.azebrow.harvest.enums.RoleEnum;
 import pl.azebrow.harvest.exeption.EmailAlreadyExistsException;
 import pl.azebrow.harvest.model.Account;
 import pl.azebrow.harvest.model.Role;
@@ -36,6 +36,9 @@ class AccountServiceTest {
     @Mock
     EmployeeCodeGenerator codeGenerator;
 
+    @Mock
+    EmployeeService employeeService;
+
     @InjectMocks
     AccountService accountService;
 
@@ -50,6 +53,7 @@ class AccountServiceTest {
         employeeRequest.setEmail("any@email.net");
 
         when(accountRepository.existsByEmail(any())).thenReturn(true);
+        when(roleRepository.findByName(any(String.class))).thenReturn(Optional.of(new Role()));
         assertThrows(EmailAlreadyExistsException.class, () -> accountService.createEmployee(employeeRequest));
     }
 
@@ -75,7 +79,6 @@ class AccountServiceTest {
 
         verify(accountRepository).existsByEmail(request.getEmail());
         verify(roleRepository).findByName(RoleEnum.USER.getName());
-        verify(codeGenerator).generateCode(request.getLastName());
     }
 
 }

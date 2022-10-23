@@ -1,117 +1,113 @@
 package pl.azebrow.harvest.service;
 
 import freemarker.template.Configuration;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.mail.MailException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import pl.azebrow.harvest.enums.RecoveryType;
 import pl.azebrow.harvest.mail.MailModel;
+import pl.azebrow.harvest.model.Account;
 import pl.azebrow.harvest.model.AccountStatus;
+import pl.azebrow.harvest.model.PasswordRecoveryToken;
 import pl.azebrow.harvest.utils.QrGenerator;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.util.ByteArrayDataSource;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.springframework.mail.javamail.MimeMessageHelper.MULTIPART_MODE_RELATED;
 
 @Service
 public class EmailService {
 
+    private final AccountStatusService accountStatusService;
+    private final Configuration emailConfig;
+    private final JavaMailSender emailSender;
+    private final QrGenerator qrGenerator;
+
     private final static String QR_CODE_CONTENT_ID = "qr-code";
     private final static String IMAGE_PNG_MIME_TYPE = "image/png";
 
-    private final static String PWD_RECOVERY_TEMPLATE = "recovery.ftl";
-    private final static String PWD_CREATION_TEMPLATE = "creation.ftl";
-    private final JavaMailSender emailSender;
-    private final Configuration emailConfig;
     private final String sourceAddress;
 
-    private final QrGenerator qrGenerator;
-
-    private AccountService accountService = null;
-
-    public EmailService(
-            JavaMailSender emailSender,
-            @Qualifier("freeMarkerConfig") Configuration emailConfig,
-            @Qualifier("sourceEmailAddress") String sourceAddress,
-            QrGenerator qrGenerator) {
+    public EmailService(AccountStatusService accountStatusService,
+                        JavaMailSender emailSender,
+                        @Qualifier("freeMarkerConfig") Configuration emailConfig,
+                        @Qualifier("sourceEmailAddress") String sourceAddress,
+                        QrGenerator qrGenerator) {
+        this.accountStatusService = accountStatusService;
         this.emailSender = emailSender;
         this.emailConfig = emailConfig;
         this.sourceAddress = sourceAddress;
         this.qrGenerator = qrGenerator;
     }
 
-    public void initComponent(AccountService accountService) {
-        this.accountService = accountService;
+    @Async
+    public void sendRecoveryEmail(PasswordRecoveryToken recoveryToken, boolean newlyCreatedAccount) {
+        RecoveryType type;
+        if (newlyCreatedAccount) {
+            type = RecoveryType.PASSWORD_CREATION;
+        } else {
+            type = RecoveryType.PASSWORD_RECOVERY;
+        }
+        var mailModel = new MailModel(recoveryToken, type);
+        var mimeMessage = emailSender.createMimeMessage();
+        var account = recoveryToken.getAccount();
+        try {
+            fillMessage(mimeMessage, mailModel);
+        } catch (MessagingException | TemplateException | IOException e) {
+            e.printStackTrace();
+            accountStatusService.setStatus(account, AccountStatus.ERROR_SENDING_EMAIL);
+        }
+        send(mimeMessage, account);
     }
 
-    public void sendEmail(MailModel mailModel) {
-        MimeMessage message = emailSender.createMimeMessage();
-        MimeMessageHelper helper;
-        try {
-            helper = new MimeMessageHelper(
-                    message,
-                    MimeMessageHelper.MULTIPART_MODE_RELATED,
-                    StandardCharsets.UTF_8.name());
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            accountService.setAccountStatus(mailModel.getTo(), AccountStatus.ERROR_SENDING_EMAIL);
-            return;
+    private void fillMessage(MimeMessage message, MailModel model)
+            throws MessagingException, TemplateException, IOException {
+        var helper = new MimeMessageHelper(message, MULTIPART_MODE_RELATED, UTF_8.name());
+        helper.setFrom(sourceAddress);
+        helper.setTo(model.getTo());
+        helper.setSubject(model.getSubject());
+        var html = processMessageToHtml(model);
+        helper.setText(html, true);
+        var code = model.getStringCode();
+        if (code != null) {
+            attachQrCode(helper, code);
         }
-        String templateName = switch (mailModel.getMailType()) {
-            case PASSWORD_RECOVERY -> PWD_RECOVERY_TEMPLATE;
-            case PASSWORD_CREATION -> PWD_CREATION_TEMPLATE;
-        };
-        Template template;
-        try {
-            template = emailConfig.getTemplate(templateName);
-        } catch (IOException e) {
-            e.printStackTrace();
-            accountService.setAccountStatus(mailModel.getTo(), AccountStatus.ERROR_SENDING_EMAIL);
-            return;
-        }
-        String html;
-        try {
-            html = FreeMarkerTemplateUtils.processTemplateIntoString(template, mailModel.getModel());
-        } catch (IOException | TemplateException e) {
-            e.printStackTrace();
-            accountService.setAccountStatus(mailModel.getTo(), AccountStatus.ERROR_SENDING_EMAIL);
-            return;
-        }
+    }
 
+    private String processMessageToHtml(MailModel mailModel)
+            throws IOException, TemplateException {
+        var template = emailConfig.getTemplate(mailModel.getTemplateName());
+        return FreeMarkerTemplateUtils.processTemplateIntoString(template, mailModel.getModel());
+    }
+
+    private void attachQrCode(MimeMessageHelper msgHelper, String code) {
+        var qrBytes = qrGenerator.generate(code);
+        var dataSource = new ByteArrayDataSource(qrBytes, IMAGE_PNG_MIME_TYPE);
         try {
-            helper.setFrom(sourceAddress);
-            helper.setTo(mailModel.getTo());
-            helper.setSubject(mailModel.getSubject());
-            helper.setText(html, true);
-            if (mailModel.getStringCode() != null) {
-                byte[] qrBytes = qrGenerator.generate(mailModel.getStringCode());
-                helper.addInline(QR_CODE_CONTENT_ID, new ByteArrayDataSource(qrBytes, IMAGE_PNG_MIME_TYPE));
-            }
+            msgHelper.addInline(QR_CODE_CONTENT_ID, dataSource);
         } catch (MessagingException e) {
-            e.printStackTrace();
-            accountService.setAccountStatus(mailModel.getTo(), AccountStatus.ERROR_SENDING_EMAIL);
-            return;
+            System.err.printf("Error attaching QR code '%s'%n", code);
         }
-        new Thread(() -> {
-            try {
-                emailSender.send(message);
-            } catch (MailSendException e) {
-                e.printStackTrace();
-                accountService.setAccountStatus(mailModel.getTo(), AccountStatus.EMAIL_NONEXISTENT);
-                return;
-            } catch (MailException e) {
-                e.printStackTrace();
-                accountService.setAccountStatus(mailModel.getTo(), AccountStatus.ERROR_SENDING_EMAIL);
-                return;
-            }
-            accountService.setAccountStatus(mailModel.getTo(), AccountStatus.CONFIRMATION_EMAIL_SENT);
-        }).start();
+    }
+
+    private void send(MimeMessage message, Account account) {
+        var status = AccountStatus.CONFIRMATION_EMAIL_SENT;
+        try {
+            emailSender.send(message);
+        } catch (MailSendException e) {
+            status = AccountStatus.EMAIL_NONEXISTENT;
+            e.printStackTrace();
+        } finally {
+            accountStatusService.setStatus(account, status);
+        }
     }
 }

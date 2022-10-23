@@ -1,4 +1,4 @@
-package pl.azebrow.harvest.constant;
+package pl.azebrow.harvest.enums;
 
 public enum RoleEnum {
     ADMIN(Constants.ADMIN),
