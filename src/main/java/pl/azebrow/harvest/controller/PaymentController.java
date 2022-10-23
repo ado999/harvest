@@ -29,7 +29,7 @@ public class PaymentController {
     private final ModelMapper mapper;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.CREATED)
     public void createPayment(
             @Valid @RequestBody PaymentRequest request
     ) {
@@ -54,7 +54,7 @@ public class PaymentController {
     }
 
     @GetMapping("/employee/{id}")
-    public Collection<PaymentResponse> getPaymentByEmployeeId(
+    public Collection<PaymentResponse> getPaymentsByEmployeeId(
             @NotNull @Min(1) @PathVariable Long id
     ) {
         var payment = paymentService.getPaymentsByEmployeeId(id);
