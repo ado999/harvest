@@ -8,6 +8,7 @@ import pl.azebrow.harvest.model.Account;
 import pl.azebrow.harvest.model.PasswordRecoveryToken;
 import pl.azebrow.harvest.repository.PasswordRecoveryTokenRepository;
 import pl.azebrow.harvest.request.PasswordChangeRequest;
+import pl.azebrow.harvest.service.email.EmailService;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -21,11 +22,8 @@ import static pl.azebrow.harvest.model.AccountStatus.EMAIL_CONFIRMED;
 public class PasswordRecoveryService {
 
     private static final long EXPIRATION_MINUTES = 10;
-
     private final Clock clock;
-
     private final PasswordRecoveryTokenRepository tokenRepository;
-
     private final EmailService emailService;
     private final PasswordService passwordService;
     private final AccountStatusService accountStatusService;

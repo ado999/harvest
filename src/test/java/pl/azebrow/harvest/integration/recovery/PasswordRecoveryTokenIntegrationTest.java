@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import pl.azebrow.harvest.integration.BaseIntegrationTest;
@@ -31,6 +32,9 @@ public class PasswordRecoveryTokenIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Test
     public void shouldCreateRecoveryToken() throws Exception {
@@ -60,8 +64,9 @@ public class PasswordRecoveryTokenIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldRecoverPassword() throws Exception {
+        var rawPassword = "PasswordStrong!";
         var passwordChangeRequest = new PasswordChangeRequest();
-        passwordChangeRequest.setPassword("PasswordStrong!");
+        passwordChangeRequest.setPassword(rawPassword);
         mockMvc.perform(post(RECOVERY_URL + "/token2")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(passwordChangeRequest)))
@@ -69,6 +74,7 @@ public class PasswordRecoveryTokenIntegrationTest extends BaseIntegrationTest {
         var account = accountRepository.findByEmail("user2@test.qp");
         assertTrue(account.isPresent());
         assertNotNull(account.get().getPassword());
+        assertTrue(passwordEncoder.matches(rawPassword, account.get().getPassword()));
         assertFalse(tokenRepository.existsById(2L));
     }
 }

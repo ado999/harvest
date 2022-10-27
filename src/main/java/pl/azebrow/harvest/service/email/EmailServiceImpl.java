@@ -1,8 +1,9 @@
-package pl.azebrow.harvest.service;
+package pl.azebrow.harvest.service.email;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -14,6 +15,7 @@ import pl.azebrow.harvest.mail.MailModel;
 import pl.azebrow.harvest.model.Account;
 import pl.azebrow.harvest.model.AccountStatus;
 import pl.azebrow.harvest.model.PasswordRecoveryToken;
+import pl.azebrow.harvest.service.AccountStatusService;
 import pl.azebrow.harvest.utils.QrGenerator;
 
 import javax.mail.MessagingException;
@@ -25,7 +27,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.mail.javamail.MimeMessageHelper.MULTIPART_MODE_RELATED;
 
 @Service
-public class EmailService {
+@Profile("!test")
+public class EmailServiceImpl implements EmailService {
 
     private final AccountStatusService accountStatusService;
     private final Configuration emailConfig;
@@ -37,11 +40,11 @@ public class EmailService {
 
     private final String sourceAddress;
 
-    public EmailService(AccountStatusService accountStatusService,
-                        JavaMailSender emailSender,
-                        @Qualifier("freeMarkerConfig") Configuration emailConfig,
-                        @Qualifier("sourceEmailAddress") String sourceAddress,
-                        QrGenerator qrGenerator) {
+    public EmailServiceImpl(AccountStatusService accountStatusService,
+                            JavaMailSender emailSender,
+                            @Qualifier("freeMarkerConfig") Configuration emailConfig,
+                            @Qualifier("sourceEmailAddress") String sourceAddress,
+                            QrGenerator qrGenerator) {
         this.accountStatusService = accountStatusService;
         this.emailSender = emailSender;
         this.emailConfig = emailConfig;
@@ -50,6 +53,7 @@ public class EmailService {
     }
 
     @Async
+    @Override
     public void sendRecoveryEmail(PasswordRecoveryToken recoveryToken, boolean newlyCreatedAccount) {
         RecoveryType type;
         if (newlyCreatedAccount) {
