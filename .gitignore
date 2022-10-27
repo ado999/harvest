@@ -36,6 +36,7 @@ e2e/*.map
 ### Java ###
 # Compiled class file
 *.class
+target/
 
 # Log file
 *.log
