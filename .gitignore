@@ -1,8 +1,12 @@
 # Created by https://www.toptal.com/developers/gitignore/api/java,angular
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,angular
 
-### Angular ###
-## Angular ##
+# Sensitive info
+secrets.yml
+
+#Maven
+!.mvn/wrapper/maven-wrapper.jar
+
 # compiled output
 dist/
 tmp/
@@ -62,8 +66,3 @@ replay_pid*
 
 # End of https://www.toptal.com/developers/gitignore/api/java,angular
 
-# Sensitive info
-secrets.yml
-
-# Maven
-.mvn/
