@@ -12,7 +12,7 @@ import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 @EnableAsync
 public class EmailConfig {
 
-    @Value("${spring.mail.username}")
+    @Value("${spring.mail.username:}")
     private String sourceEmailAddress;
 
     @Bean(name = "freeMarkerConfig")
@@ -23,7 +23,6 @@ public class EmailConfig {
     }
 
     @Bean(name = "sourceEmailAddress")
-    @Profile("!test")
     public String sourceEmailAddress(){
         return sourceEmailAddress;
     }
