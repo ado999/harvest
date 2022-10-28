@@ -7,6 +7,9 @@ sudo: required
 services:
   - docker
 
+before_install:
+  - chmod +x mvnw
+
 script:
   - ./mvnw install -DskipTests=true -B
   - ./mvnw test -DargLine="-Dspring.profiles.active=test" -B
