@@ -1,0 +1,12 @@
+language: java
+jdk:
+  - openjdk18
+
+sudo: required
+
+services:
+  - docker
+
+script:
+  - ./mvnw install -DskipTests=true -B
+  - ./mvnw test -DargLine="-Dspring.profiles.active=test" -B
