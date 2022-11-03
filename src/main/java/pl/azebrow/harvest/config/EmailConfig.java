@@ -41,10 +41,10 @@ public class EmailConfig {
     @Bean(name = "sourceEmailAddress")
     public String sourceEmailAddress() {
         if (isMailCredentialsRequired() && !areMailCredentialsProvided()) {
+            ctx.close();
             System.err.println("No email credentials provided. " +
                     "Set \"spring.mail.username\" and \"spring.mail.password\" " +
-                    "or set \"no-mail\" as active profile.");
-            ctx.close();
+                    "or activate \"no-mail\" profile.");
             System.exit(1);
         }
         return sourceEmailAddress;

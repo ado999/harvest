@@ -67,14 +67,14 @@ Harvest is a Spring Boot application built using Maven. You can run it locally i
 
 Profiles provide an easy way to segregate parts of application configuration. Currently implemented are:
 
-* dev - Contains script for populating the DB with sample data (default)
+* dev - Contains script for populating the DB with sample data (active by default)
 * prod - Profile created for production
 * test - Configures DB connection using Testcontainers
 * no-mail - Disables sending emails
 
 ### Mail configuration
 
-If "no-mail" profile is not active application requires SMTP credentials. This can be done by:
+Application requires SMTP credentials if "no-mail" profile is not active. This can be done by:
 
 * Creating "secrets.yml" file in resources directory:
 
@@ -84,6 +84,7 @@ spring:
     username: <your-mail-username>
     password: <your-mail-password>
 ```
+Or
 
 * Providing VM arguments at application startup:
 
