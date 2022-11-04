@@ -42,7 +42,8 @@ e2e/*.map
 *.class
 target/
 
-# Log file
+# Log files
+logs/
 *.log
 
 # BlueJ files

@@ -1,13 +1,11 @@
 package pl.azebrow.harvest.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -17,6 +15,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableAsync
+@Slf4j
 public class EmailConfig {
 
     @Autowired
@@ -40,9 +39,9 @@ public class EmailConfig {
 
     @Bean(name = "sourceEmailAddress")
     public String sourceEmailAddress() {
-        if (isMailCredentialsRequired() && !areMailCredentialsProvided()) {
+        if (areMailCredentialsRequired() && !areMailCredentialsProvided()) {
             ctx.close();
-            System.err.println("No email credentials provided. " +
+            log.error("No email credentials provided. " +
                     "Set \"spring.mail.username\" and \"spring.mail.password\" " +
                     "or activate \"no-mail\" profile.");
             System.exit(1);
@@ -50,7 +49,7 @@ public class EmailConfig {
         return sourceEmailAddress;
     }
 
-    private Boolean isMailCredentialsRequired() {
+    private Boolean areMailCredentialsRequired() {
         return Arrays
                 .stream(env.getActiveProfiles())
                 .noneMatch(p -> p.equals("test") || p.equals("no-mail"));

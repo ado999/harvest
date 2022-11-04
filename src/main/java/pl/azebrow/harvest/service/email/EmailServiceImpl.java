@@ -2,6 +2,7 @@ package pl.azebrow.harvest.service.email;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mail.MailSendException;
@@ -28,6 +29,7 @@ import static org.springframework.mail.javamail.MimeMessageHelper.MULTIPART_MODE
 
 @Service
 @Profile("!(test | no-mail)")
+@Slf4j
 public class EmailServiceImpl implements EmailService {
 
     private final AccountStatusService accountStatusService;
@@ -99,7 +101,7 @@ public class EmailServiceImpl implements EmailService {
         try {
             msgHelper.addInline(QR_CODE_CONTENT_ID, dataSource);
         } catch (MessagingException e) {
-            System.err.printf("Error attaching QR code '%s'%n", code);
+            log.error("Error attaching QR code \"{}\"", code);
         }
     }
 

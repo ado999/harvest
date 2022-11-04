@@ -10,6 +10,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+    open-in-view: false
   flyway:
     baseline-on-migration: true
 
@@ -26,3 +27,7 @@ spring:
           auth: true
           starttls:
             enable: true
+
+logging:
+  file:
+    name: ./logs/harvest.log
