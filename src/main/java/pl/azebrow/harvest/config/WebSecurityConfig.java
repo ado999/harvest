@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,9 +21,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -59,12 +63,12 @@ public class WebSecurityConfig {
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
                 .authorizeRequests()
                 .antMatchers("/api/v1/recovery/**").anonymous()
-                .antMatchers("/login").permitAll()
+                .antMatchers("/login", "/index.html").permitAll()
                 .anyRequest().authenticated().and()
                 .rememberMe(this::configureRememberMe)
-                .formLogin(this::configureLogin)
                 .logout(this::configureLogout)
-                .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+                .formLogin(this::configureLogin)
+                .exceptionHandling().authenticationEntryPoint(new Http403ForbiddenEntryPoint());
 
         return http.build();
     }
@@ -76,8 +80,7 @@ public class WebSecurityConfig {
 
     private void configureLogin(FormLoginConfigurer<HttpSecurity> configurer) {
         configurer
-                .loginPage("/login").permitAll()
-                .successHandler((_request, _response, _auth) -> System.out.println("do nuffin, success"))
+                .successHandler((_request, _response, _auth) -> {})
                 .failureHandler((_request, _response, _auth) -> _response.setStatus(HttpServletResponse.SC_UNAUTHORIZED));
     }
 
