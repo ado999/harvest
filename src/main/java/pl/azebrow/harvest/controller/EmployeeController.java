@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
@@ -38,14 +40,13 @@ public class EmployeeController {
     @Operation(summary = "Get employees",
             parameters = @Parameter(name = "showDisabled", description = "Tells whether or not to show disabled employee accounts"))
     @GetMapping
-    public Collection<EmployeeResponse> getEmployees(
-            @RequestParam(required = false, defaultValue = "false") boolean showDisabled
+    public Page<EmployeeResponse> getEmployees(
+            @RequestParam(required = false, defaultValue = "false") boolean showDisabled,
+            Pageable pageable
     ) {
-        var employees = employeeService.getAllEmployees(showDisabled);
+        var employees = employeeService.getEmployeePage(showDisabled, pageable);
         return employees
-                .stream()
-                .map(e -> mapper.map(e, EmployeeResponse.class))
-                .collect(Collectors.toList());
+                .map(e -> mapper.map(e, EmployeeResponse.class));
     }
 
     @Operation(summary = "Get employee account by code (meant to be encoded as QR code)")

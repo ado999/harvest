@@ -1,6 +1,8 @@
 package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.azebrow.harvest.exeption.EmployeeNotFoundException;
@@ -12,7 +14,6 @@ import pl.azebrow.harvest.utils.EmployeeCodeGenerator;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -65,12 +66,9 @@ public class EmployeeService {
                 );
     }
 
-    public Collection<Employee> getAllEmployees(boolean showDisabled) {
-        return employeeRepository
-                .findAll()
-                .stream()
-                .filter(e -> showDisabled || e.getAccount().getEnabled())
-                .collect(Collectors.toList());
+    public Page<Employee> getEmployeePage(boolean showDisabled, Pageable pageable) {
+        var skipDisabled = !showDisabled;
+        return employeeRepository.findAll(skipDisabled, pageable);
     }
 
     public Collection<Employee> searchEmployees(String query) {
