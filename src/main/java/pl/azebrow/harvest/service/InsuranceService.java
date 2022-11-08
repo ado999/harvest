@@ -1,6 +1,8 @@
 package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.exeption.ResourceNotFoundException;
 import pl.azebrow.harvest.model.Employee;
@@ -9,7 +11,6 @@ import pl.azebrow.harvest.repository.InsuranceRepository;
 import pl.azebrow.harvest.request.InsuranceRequest;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,10 +19,10 @@ public class InsuranceService {
     private final EmployeeService employeeService;
     private final InsuranceRepository insuranceRepository;
 
-    public List<Insurance> getEmployeePolicies(Long employeeId) {
+    public Page<Insurance> getEmployeePolicies(Long employeeId, Pageable pageable) {
         Employee employee = employeeService.getEmployeeById(employeeId);
-        return new ArrayList<>(insuranceRepository
-                .findAllByEmployee(employee));
+        return insuranceRepository
+                .findAllByEmployee(employee, pageable);
     }
 
     public void addPolicy(InsuranceRequest insuranceRequest) {

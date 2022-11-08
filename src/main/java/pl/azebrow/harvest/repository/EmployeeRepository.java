@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import pl.azebrow.harvest.model.Employee;
 
-import java.util.Collection;
 import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
@@ -17,8 +16,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     @Query("SELECT e FROM Employee e " +
             "WHERE UPPER(CONCAT(e.account.firstName, e.account.lastName, e.account.email, e.code))" +
             "LIKE UPPER(CONCAT('%', :query, '%'))")
-    Collection<Employee> findAllByQuery(String query);
+    Page<Employee> findAllByQuery(String query, Pageable pageable);
 
-    @Query("SELECT e FROM Employee WHERE e.account.enabled = true OR e.account.enabled = ?1")
-    Page<Employee> findAll(boolean skipDisabled, Pageable pageable);
+    @Query("SELECT e FROM Employee e WHERE e.account.enabled = true OR e.account.enabled = :skipDisabled")
+    Page<Employee> findAllWithDisabledFilter(Boolean skipDisabled, Pageable pageable);
 }

@@ -1,6 +1,8 @@
 package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.exeption.ResourceNotFoundException;
 import pl.azebrow.harvest.model.Account;
@@ -19,12 +21,9 @@ public class LocationService {
     private final AccountService accountService;
     private final LocationRepository locationRepository;
 
-    public Collection<Location> getLocations(boolean showDisabled) {
+    public Page<Location> getLocations(boolean showDisabled, Pageable pageable) {
         return locationRepository
-                .findAll()
-                .stream()
-                .filter(l -> showDisabled || !l.getDisabled())
-                .collect(Collectors.toList());
+                .findAllWithDisabledFilter(showDisabled, pageable);
     }
 
     public void createLocation(LocationRequest locationRequest) {

@@ -1,6 +1,8 @@
 package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.exeption.ResourceNotFoundException;
@@ -47,10 +49,10 @@ public class PaymentService {
                 );
     }
 
-    public Collection<Payment> getPaymentsByEmployeeId(Long employeeId) {
+    public Page<Payment> getPaymentsByEmployeeId(Long employeeId, Pageable pageable) {
         var employee = employeeService.getEmployeeById(employeeId);
         return paymentRepository
-                .findByEmployee(employee);
+                .findByEmployee(employee, pageable);
     }
 
     public Collection<Payment> findPayments(Specification<Payment> specs) {

@@ -1,6 +1,8 @@
 package pl.azebrow.harvest.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.azebrow.harvest.exeption.ResourceNotFoundException;
 import pl.azebrow.harvest.model.JobType;
@@ -20,12 +22,8 @@ public class JobTypeService {
     private final JobTypeRepository jobTypeRepository;
 
 
-    public Collection<JobType> getJobTypeList(boolean showDisabled) {
-        return jobTypeRepository
-                .findAll()
-                .stream()
-                .filter(j -> showDisabled || !j.getDisabled())
-                .collect(Collectors.toList());
+    public Page<JobType> getJobTypeList(boolean showDisabled, Pageable pageable) {
+        return jobTypeRepository.findAllWithDisabledFilter(showDisabled, pageable);
     }
 
     public void addJobType(JobTypeRequest jobTypeRequest) {

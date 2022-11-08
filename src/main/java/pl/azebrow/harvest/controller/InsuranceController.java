@@ -5,11 +5,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.enums.RoleEnum;
+import pl.azebrow.harvest.model.Insurance;
 import pl.azebrow.harvest.request.InsuranceRequest;
 import pl.azebrow.harvest.response.InsuranceResponse;
 import pl.azebrow.harvest.service.InsuranceService;
@@ -37,14 +40,13 @@ public class InsuranceController {
             @ApiResponse(responseCode = "404", description = "No employee found with the given id")
     })
     @GetMapping("/employee/{id}")
-    public Collection<InsuranceResponse> getEmployeePolicies(
-            @NotNull @Min(1) @PathVariable Long id
+    public Page<InsuranceResponse> getEmployeePolicies(
+            @NotNull @Min(1) @PathVariable Long id,
+            Pageable pageable
     ) {
-        var insuranceList = insuranceService.getEmployeePolicies(id);
-        return insuranceList
-                .stream()
-                .map(i -> mapper.map(i, InsuranceResponse.class))
-                .collect(Collectors.toList());
+        var insurancePage = insuranceService.getEmployeePolicies(id, pageable);
+        return insurancePage
+                .map(i -> mapper.map(i, InsuranceResponse.class));
     }
 
     @Operation(summary = "Add employee's insurance policy")

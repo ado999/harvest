@@ -2,6 +2,8 @@ package pl.azebrow.harvest.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
@@ -54,14 +56,13 @@ public class PaymentController {
     }
 
     @GetMapping("/employee/{id}")
-    public Collection<PaymentResponse> getPaymentsByEmployeeId(
-            @NotNull @Min(1) @PathVariable Long id
+    public Page<PaymentResponse> getPaymentsByEmployeeId(
+            @NotNull @Min(1) @PathVariable Long id,
+            Pageable pageable
     ) {
-        var payment = paymentService.getPaymentsByEmployeeId(id);
+        var payment = paymentService.getPaymentsByEmployeeId(id, pageable);
         return payment
-                .stream()
-                .map(p -> mapper.map(p, PaymentResponse.class))
-                .collect(Collectors.toList());
+                .map(p -> mapper.map(p, PaymentResponse.class));
     }
 
 }

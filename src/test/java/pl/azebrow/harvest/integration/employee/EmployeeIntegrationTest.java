@@ -12,6 +12,7 @@ import pl.azebrow.harvest.repository.EmployeeRepository;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,8 +33,8 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
     public void shouldReturnEnabledEmployees() throws Exception {
         mockMvc.perform(get(EMPLOYEE_URL))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(3)));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(3)));
     }
 
     @Test
@@ -42,8 +43,8 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(get(EMPLOYEE_URL)
                         .param("showDisabled", "true"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(5)));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(5)));
     }
 
     @Test
@@ -81,8 +82,8 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
     public void shouldFindEmployeeByFirstName() throws Exception {
         mockMvc.perform(get(EMPLOYEE_URL + "/search/MARCI"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(1)));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(1)));
     }
 
     @Test
@@ -90,8 +91,8 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
     public void shouldFindEmployeeByLastName() throws Exception {
         mockMvc.perform(get(EMPLOYEE_URL + "/search/smitherman"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(1)));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(1)));
     }
 
     @Test
@@ -99,8 +100,8 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
     public void shouldFindEmployeeByEmail() throws Exception {
         mockMvc.perform(get(EMPLOYEE_URL + "/search/msmitherman1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(1)));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(1)));
     }
 
     @Test
@@ -108,8 +109,8 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
     public void shouldFindEmployeeByCode() throws Exception {
         mockMvc.perform(get(EMPLOYEE_URL + "/search/tof5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(1)));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(1)));
     }
 
     @Test
@@ -118,6 +119,7 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
         var employeeRequest = new EmployeeRequestBuilder()
                 .employeeRequest();
         mockMvc.perform(post(EMPLOYEE_URL)
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(employeeRequest)))
                 .andExpect(status().isCreated());
@@ -130,6 +132,7 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
         var employeeRequest = new EmployeeRequestBuilder()
                 .email("jtofanini4@angelfire.com").employeeRequest();
         mockMvc.perform(post(EMPLOYEE_URL)
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(employeeRequest)))
                 .andExpect(status().isConflict());
@@ -144,6 +147,7 @@ public class EmployeeIntegrationTest extends BaseIntegrationTest {
                 .passportTaken(true)
                 .updateRequest();
         mockMvc.perform(put(EMPLOYEE_URL + "/id/1")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(updateRequest)))
                 .andExpect(status().isNoContent());

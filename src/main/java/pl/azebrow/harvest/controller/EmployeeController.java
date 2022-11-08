@@ -76,13 +76,11 @@ public class EmployeeController {
 
     @Operation(summary = "Search employees by string in first name, last name, email or code")
     @GetMapping("/search/{query}")
-    public Collection<EmployeeResponse> searchEmployee(
-            @PathVariable String query) {
-        var employees = employeeService.searchEmployees(query);
+    public Page<EmployeeResponse> searchEmployee(
+            @PathVariable String query, Pageable pageable) {
+        var employees = employeeService.searchEmployees(query, pageable);
         return employees
-                .stream()
-                .map(e -> mapper.map(e, EmployeeResponse.class))
-                .collect(Collectors.toList());
+                .map(e -> mapper.map(e, EmployeeResponse.class));
     }
 
     @Operation(summary = "Create employee account")

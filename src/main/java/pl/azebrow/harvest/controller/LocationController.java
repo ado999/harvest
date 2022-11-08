@@ -2,6 +2,8 @@ package pl.azebrow.harvest.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
@@ -30,14 +32,13 @@ public class LocationController {
     private final ModelMapper mapper;
 
     @GetMapping
-    public Collection<LocationResponse> getLocations(
-            @RequestParam(required = false, defaultValue = "false") boolean showDisabled
+    public Page<LocationResponse> getLocations(
+            @RequestParam(required = false, defaultValue = "false") boolean showDisabled,
+            Pageable pageable
     ) {
-        var locations = locationService.getLocations(showDisabled);
+        var locations = locationService.getLocations(showDisabled, pageable);
         return locations
-                .stream()
-                .map(l -> mapper.map(l, LocationResponse.class))
-                .collect(Collectors.toList());
+                .map(l -> mapper.map(l, LocationResponse.class));
     }
 
     @Secured(RoleEnum.Constants.ADMIN)

@@ -13,7 +13,6 @@ import pl.azebrow.harvest.request.EmployeeUpdateRequest;
 import pl.azebrow.harvest.utils.EmployeeCodeGenerator;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 
 @Service
 @Transactional
@@ -68,10 +67,10 @@ public class EmployeeService {
 
     public Page<Employee> getEmployeePage(boolean showDisabled, Pageable pageable) {
         var skipDisabled = !showDisabled;
-        return employeeRepository.findAll(skipDisabled, pageable);
+        return employeeRepository.findAllWithDisabledFilter(skipDisabled, pageable);
     }
 
-    public Collection<Employee> searchEmployees(String query) {
-        return employeeRepository.findAllByQuery(query);
+    public Page<Employee> searchEmployees(String query, Pageable pageable) {
+        return employeeRepository.findAllByQuery(query, pageable);
     }
 }
