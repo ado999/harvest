@@ -15,6 +15,7 @@ import pl.azebrow.harvest.request.PasswordChangeRequest;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,6 +40,7 @@ public class PasswordRecoveryTokenIntegrationTest extends BaseIntegrationTest {
     @Test
     public void shouldCreateRecoveryToken() throws Exception {
         mockMvc.perform(post(RECOVERY_URL)
+                        .with(csrf())
                         .param("email", "user1@test.qp"))
                 .andExpect(status().isOk());
         var account = accountRepository.getReferenceById(1L);
@@ -53,6 +55,7 @@ public class PasswordRecoveryTokenIntegrationTest extends BaseIntegrationTest {
         var passwordChangeRequest = new PasswordChangeRequest();
         passwordChangeRequest.setPassword("PasswordStrong!");
         mockMvc.perform(post(RECOVERY_URL + "/token1")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(passwordChangeRequest)))
                 .andExpect(status().isBadRequest());
@@ -68,6 +71,7 @@ public class PasswordRecoveryTokenIntegrationTest extends BaseIntegrationTest {
         var passwordChangeRequest = new PasswordChangeRequest();
         passwordChangeRequest.setPassword(rawPassword);
         mockMvc.perform(post(RECOVERY_URL + "/token2")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(passwordChangeRequest)))
                 .andExpect(status().isOk());

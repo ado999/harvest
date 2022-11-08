@@ -16,6 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,6 +50,7 @@ public class JobIntegrationTest extends BaseIntegrationTest {
                 .jobRequest();
         var jobValue = jobRequest.getRate().multiply(jobRequest.getQuantity());
         mockMvc.perform(post(JOB_URL)
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(jobRequest)))
                 .andExpect(status().isCreated());
@@ -71,6 +73,7 @@ public class JobIntegrationTest extends BaseIntegrationTest {
                 .jobRequest();
         var jobValue = jobRequest.getRate().multiply(jobRequest.getQuantity());
         mockMvc.perform(put(JOB_URL + "/1")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(jobRequest)))
                 .andExpect(status().isNoContent());

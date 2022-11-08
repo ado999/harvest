@@ -1,15 +1,14 @@
 package pl.azebrow.harvest.integration.login;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import pl.azebrow.harvest.integration.BaseIntegrationTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static pl.azebrow.harvest.integration.login.FormURLEncodedHttpEntityBuilder.PASSWORD;
-import static pl.azebrow.harvest.integration.login.FormURLEncodedHttpEntityBuilder.USERNAME;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SqlGroup({
         @Sql(scripts = "classpath:db/login.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
@@ -23,29 +22,23 @@ public class LoginTest extends BaseIntegrationTest {
     private final static String PASS = "janusz";
 
     @Test
-    public void whenValidCredentials_thenRedirectToMain() {
-        var response = attemptLogin(PASS);
-        assertEquals(HttpStatus.FOUND, response.getStatusCode());
-        assertNotNull(response.getHeaders().getLocation());
-        assertNotNull(response.getHeaders().get("Set-Cookie"));
-        assertTrue(response.getHeaders().getLocation().toString().endsWith("/"));
+    public void shouldSuccessfullyLogin() throws Exception {
+        mockMvc.perform(post(LOGIN_URL)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("username", USER)
+                        .param("password", PASS)
+                        .with(csrf()))
+                .andExpect(status().isOk());
     }
 
     @Test
-    public void whenInvalidCredentials_thenRedirectToLogin() {
-        var response = attemptLogin("Invalid");
-        assertEquals(HttpStatus.FOUND, response.getStatusCode());
-        assertNotNull(response.getHeaders().getLocation());
-        assertNotNull(response.getHeaders().get("Set-Cookie"));
-        assertTrue(response.getHeaders().getLocation().toString().endsWith("/login?error"));
-    }
-
-    private ResponseEntity<?> attemptLogin(String password) {
-        var httpEntity = new FormURLEncodedHttpEntityBuilder()
-                .withParam(USERNAME, USER)
-                .withParam(PASSWORD, password)
-                .build();
-        return testRestTemplate.postForEntity(LOGIN_URL, httpEntity, String.class);
+    public void shouldNotSuccessfullyLoginWhenInvalidPassword() throws Exception {
+        mockMvc.perform(post(LOGIN_URL)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("username", USER)
+                        .param("password", "Invalid")
+                        .with(csrf()))
+                .andExpect(status().isUnauthorized());
     }
 
 }

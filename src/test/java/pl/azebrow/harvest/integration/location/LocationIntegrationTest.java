@@ -13,6 +13,7 @@ import pl.azebrow.harvest.request.LocationUpdateRequest;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,8 +34,8 @@ public class LocationIntegrationTest extends BaseIntegrationTest {
     public void shouldReturnAvailableLocations() throws Exception {
         mockMvc.perform(get(LOCATION_URL))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(3)));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(3)));
     }
 
     @Test
@@ -43,8 +44,8 @@ public class LocationIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(get(LOCATION_URL)
                         .param("showDisabled", "true"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(5)));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(5)));
     }
 
     @Test
@@ -56,6 +57,7 @@ public class LocationIntegrationTest extends BaseIntegrationTest {
                 .disabled(false)
                 .locationRequest();
         mockMvc.perform(post(LOCATION_URL)
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(locationRequest)))
                 .andExpect(status().isCreated());
@@ -72,6 +74,7 @@ public class LocationIntegrationTest extends BaseIntegrationTest {
         var locationUpdateRequest = new LocationUpdateRequest();
         locationUpdateRequest.setDisabled(true);
         mockMvc.perform(put(LOCATION_URL + "/1")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(locationUpdateRequest)))
                 .andExpect(status().isNoContent());

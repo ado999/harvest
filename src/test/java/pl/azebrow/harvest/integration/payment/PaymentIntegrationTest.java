@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,6 +41,7 @@ public class PaymentIntegrationTest extends BaseIntegrationTest {
                 .amount(BigDecimal.valueOf(50L))
                 .paymentRequest();
         mockMvc.perform(post(PAYMENT_URL)
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(paymentRequest)))
                 .andExpect(status().isCreated());
@@ -58,6 +60,7 @@ public class PaymentIntegrationTest extends BaseIntegrationTest {
                 .amount(BigDecimal.valueOf(10L))
                 .paymentRequest();
         mockMvc.perform(put(PAYMENT_URL + "/1")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(paymentRequest)))
                 .andExpect(status().isNoContent());
@@ -83,8 +86,8 @@ public class PaymentIntegrationTest extends BaseIntegrationTest {
     public void shouldReturnPaymentsByEmployeeId() throws Exception {
         mockMvc.perform(get(PAYMENT_URL + "/employee/2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(3)));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(3)));
     }
 
 }

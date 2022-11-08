@@ -12,6 +12,7 @@ import pl.azebrow.harvest.repository.InsuranceRepository;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,7 +36,7 @@ public class InsuranceIntegrationTest extends BaseIntegrationTest {
     public void shouldReturnEmployeePolicies() throws Exception {
         mockMvc.perform(get(INSURANCE_URL + "/employee/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)));
+                .andExpect(jsonPath("$.content", hasSize(3)));
     }
 
     @Test
@@ -45,6 +46,7 @@ public class InsuranceIntegrationTest extends BaseIntegrationTest {
                 .employeeId(1L);
         var insuranceRequest = insuranceRequestBuilder.insuranceRequest();
         mockMvc.perform(post(INSURANCE_URL)
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(insuranceRequest)))
                 .andExpect(status().isCreated());
@@ -58,7 +60,8 @@ public class InsuranceIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = "STAFF")
     public void shouldDeletePolicy() throws Exception {
-        mockMvc.perform(delete(INSURANCE_URL + "/1"))
+        mockMvc.perform(delete(INSURANCE_URL + "/1")
+                        .with(csrf()))
                 .andExpect(status().isNoContent());
         assertFalse(insuranceRepository.existsById(1L));
     }
@@ -66,7 +69,8 @@ public class InsuranceIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = "STAFF")
     public void shouldNotFindPolicy() throws Exception {
-        mockMvc.perform(delete(INSURANCE_URL + "/999999"))
+        mockMvc.perform(delete(INSURANCE_URL + "/999999")
+                        .with(csrf()))
                 .andExpect(status().isNotFound());
     }
 

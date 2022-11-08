@@ -12,6 +12,7 @@ import pl.azebrow.harvest.response.AccountResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -35,6 +36,7 @@ public class AccountIntegrationTest extends BaseIntegrationTest {
                 .email("email@admin.qp")
                 .accountRequest();
         mockMvc.perform(post(ACCOUNT_URL)
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(staffAccountRequest)))
                 .andExpect(status().isCreated());
@@ -68,6 +70,7 @@ public class AccountIntegrationTest extends BaseIntegrationTest {
                 .enabled(false)
                 .accountUpdateRequest();
         mockMvc.perform(put(ACCOUNT_URL + "/1")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(updateRequest)))
                 .andExpect(status().isNoContent());
@@ -85,6 +88,7 @@ public class AccountIntegrationTest extends BaseIntegrationTest {
                 .email("email@admin.qp")
                 .emailUpdateRequest();
         mockMvc.perform(put(ACCOUNT_URL + "/email/1")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUtils.stringify(emailUpdate)))
                 .andExpect(status().isNoContent());
