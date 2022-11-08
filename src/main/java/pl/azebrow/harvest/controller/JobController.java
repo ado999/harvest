@@ -8,8 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
@@ -24,8 +23,6 @@ import pl.azebrow.harvest.specification.SpecificationBuilder;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.Map;
 
 @RestController
@@ -60,14 +57,13 @@ public class JobController {
     @GetMapping
     public Page<JobResponse> searchJobs(
             @RequestParam(defaultValue = "{}") Map<String, Object> params,
-            @PositiveOrZero @RequestParam(defaultValue = "0") Integer page,
-            @Positive @RequestParam(defaultValue = "25") Integer size
+            @RequestParam(required = false) Pageable pageable
     ) {
         var sb = new SpecificationBuilder();
         params.forEach(sb::with);
 
         return jobService
-                .findJobsWithPagination(sb.build(Job.class), PageRequest.of(page, size, Sort.by("date")))
+                .findJobsWithPagination(sb.build(Job.class), pageable)
                 .map(j -> mapper.map(j, JobResponse.class));
     }
 

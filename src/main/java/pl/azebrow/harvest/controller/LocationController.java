@@ -17,8 +17,6 @@ import pl.azebrow.harvest.service.LocationService;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/location")
@@ -34,7 +32,7 @@ public class LocationController {
     @GetMapping
     public Page<LocationResponse> getLocations(
             @RequestParam(required = false, defaultValue = "false") boolean showDisabled,
-            Pageable pageable
+            @RequestParam(required = false) Pageable pageable
     ) {
         var locations = locationService.getLocations(showDisabled, pageable);
         return locations

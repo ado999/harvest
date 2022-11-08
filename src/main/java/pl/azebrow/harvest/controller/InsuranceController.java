@@ -12,7 +12,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.azebrow.harvest.enums.RoleEnum;
-import pl.azebrow.harvest.model.Insurance;
 import pl.azebrow.harvest.request.InsuranceRequest;
 import pl.azebrow.harvest.response.InsuranceResponse;
 import pl.azebrow.harvest.service.InsuranceService;
@@ -20,8 +19,6 @@ import pl.azebrow.harvest.service.InsuranceService;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/insurance")
@@ -42,7 +39,7 @@ public class InsuranceController {
     @GetMapping("/employee/{id}")
     public Page<InsuranceResponse> getEmployeePolicies(
             @NotNull @Min(1) @PathVariable Long id,
-            Pageable pageable
+            @RequestParam(required = false) Pageable pageable
     ) {
         var insurancePage = insuranceService.getEmployeePolicies(id, pageable);
         return insurancePage

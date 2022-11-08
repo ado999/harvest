@@ -22,8 +22,6 @@ import pl.azebrow.harvest.service.EmployeeService;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/employee")
@@ -42,7 +40,7 @@ public class EmployeeController {
     @GetMapping
     public Page<EmployeeResponse> getEmployees(
             @RequestParam(required = false, defaultValue = "false") boolean showDisabled,
-            Pageable pageable
+            @RequestParam(required = false) Pageable pageable
     ) {
         var employees = employeeService.getEmployeePage(showDisabled, pageable);
         return employees
@@ -77,7 +75,9 @@ public class EmployeeController {
     @Operation(summary = "Search employees by string in first name, last name, email or code")
     @GetMapping("/search/{query}")
     public Page<EmployeeResponse> searchEmployee(
-            @PathVariable String query, Pageable pageable) {
+            @PathVariable String query,
+            @RequestParam(required = false) Pageable pageable
+    ) {
         var employees = employeeService.searchEmployees(query, pageable);
         return employees
                 .map(e -> mapper.map(e, EmployeeResponse.class));

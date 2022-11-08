@@ -35,7 +35,7 @@ public class JobTypeController {
     @GetMapping
     public Page<JobTypeResponse> getJobTypeList(
             @RequestParam(required = false, defaultValue = "false") boolean showDisabled,
-            Pageable pageable
+            @RequestParam(required = false) Pageable pageable
     ) {
         var jobTypes = jobTypeService.getJobTypeList(showDisabled, pageable);
         return jobTypes
