@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
@@ -57,7 +58,7 @@ public class JobController {
     @GetMapping
     public Page<JobResponse> searchJobs(
             @RequestParam(defaultValue = "{}") Map<String, Object> params,
-            @RequestParam(required = false) Pageable pageable
+            @PageableDefault Pageable pageable
     ) {
         var sb = new SpecificationBuilder();
         params.forEach(sb::with);

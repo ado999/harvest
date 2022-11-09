@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
@@ -39,7 +40,7 @@ public class InsuranceController {
     @GetMapping("/employee/{id}")
     public Page<InsuranceResponse> getEmployeePolicies(
             @NotNull @Min(1) @PathVariable Long id,
-            @RequestParam(required = false) Pageable pageable
+            @PageableDefault Pageable pageable
     ) {
         var insurancePage = insuranceService.getEmployeePolicies(id, pageable);
         return insurancePage
