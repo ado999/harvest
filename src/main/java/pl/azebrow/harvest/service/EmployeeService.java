@@ -65,12 +65,11 @@ public class EmployeeService {
                 );
     }
 
-    public Page<Employee> getEmployeePage(boolean showDisabled, Pageable pageable) {
+    public Page<Employee> getEmployeePage(boolean showDisabled, String query, Pageable pageable) {
         var skipDisabled = !showDisabled;
-        return employeeRepository.findAllWithDisabledFilter(skipDisabled, pageable);
-    }
-
-    public Page<Employee> searchEmployees(String query, Pageable pageable) {
-        return employeeRepository.findAllByQuery(query, pageable);
+        if (query.isEmpty()) {
+            return employeeRepository.findAllWithDisabledFilter(skipDisabled, pageable);
+        }
+        return employeeRepository.findAllByQuery(skipDisabled, query, pageable);
     }
 }

@@ -41,9 +41,10 @@ public class EmployeeController {
     @GetMapping
     public Page<EmployeeResponse> getEmployees(
             @RequestParam(required = false, defaultValue = "false") boolean showDisabled,
+            @RequestParam(required = false, defaultValue = "") String query,
             @PageableDefault Pageable pageable
     ) {
-        var employees = employeeService.getEmployeePage(showDisabled, pageable);
+        var employees = employeeService.getEmployeePage(showDisabled, query, pageable);
         return employees
                 .map(e -> mapper.map(e, EmployeeResponse.class));
     }
@@ -71,17 +72,6 @@ public class EmployeeController {
             @NotNull @Min(1) @PathVariable Long id) {
         var employee = employeeService.getEmployeeById(id);
         return mapper.map(employee, EmployeeResponse.class);
-    }
-
-    @Operation(summary = "Search employees by string in first name, last name, email or code")
-    @GetMapping("/search/{query}")
-    public Page<EmployeeResponse> searchEmployee(
-            @PathVariable String query,
-            @PageableDefault Pageable pageable
-    ) {
-        var employees = employeeService.searchEmployees(query, pageable);
-        return employees
-                .map(e -> mapper.map(e, EmployeeResponse.class));
     }
 
     @Operation(summary = "Create employee account")

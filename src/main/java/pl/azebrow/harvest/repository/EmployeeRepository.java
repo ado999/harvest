@@ -14,9 +14,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Boolean existsByCode(String code);
 
     @Query("SELECT e FROM Employee e " +
-            "WHERE UPPER(CONCAT(e.account.firstName, e.account.lastName, e.account.email, e.code))" +
-            "LIKE UPPER(CONCAT('%', :query, '%'))")
-    Page<Employee> findAllByQuery(String query, Pageable pageable);
+            "WHERE UPPER(CONCAT(e.account.firstName, e.account.lastName, e.account.email, e.code)) LIKE UPPER(CONCAT('%', :query, '%'))" +
+            "AND (e.account.enabled = true OR e.account.enabled = :skipDisabled)")
+    Page<Employee> findAllByQuery(Boolean skipDisabled, String query, Pageable pageable);
 
     @Query("SELECT e FROM Employee e WHERE e.account.enabled = true OR e.account.enabled = :skipDisabled")
     Page<Employee> findAllWithDisabledFilter(Boolean skipDisabled, Pageable pageable);
